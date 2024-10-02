@@ -1,0 +1,220 @@
+TYPESCRIPT with it's static type checking, you get to learn about potential bugs as you're typing the code, than heading to 
+the browser and figuring out at runtime.
+
+It also provides a way to describe the shape of an object hence providing better documentation and autocomplete.
+It makes maintenance and refactoring of large code bases much easier.
+
+
+
+What is TypeScript ?
+> It is an open source programming language developed and maintained by Microsoft. It is a typed superset 
+  of JavaScript that compiles to plain JavaScript which is understood by the Browsers.
+
+> In simple terms, combine the JavaScript we know with ES6, ES7 and a few additional features and the end
+  product is TypeScript. It is also the main programming language of Angular.
+
+Why TypeScript ?
+> TypeScript is superior to its counterparts like CoffeeScript & Dart in a way that TypeScript is just
+  extended JavaScript. Dart & CoffeeScript are new languages in themselves while TypeScript is not.
+
+  We can even rename a `.js` extension file to `.ts` and it'd work perfectly fine.
+
+> The second reason is optional static typing and type inference.
+  JavaScript is dynamically typed which means JavaScript does not know what type a variable is 
+  until it is actually instantiated at runtime which is too late.
+
+  TypeScript on the other hand adds type support to JavaScript. As a result, errors are identified as & when 
+  you type your code and during the compilation step. This results in less error-prone code.
+  
+  Specifying the type is completely optional. When you don't specify a type, TypeScript will infer the type
+  for you and still point out the errors which would otherwise be seen only during runtime.
+
+>> To compile the .ts file's code to plain JavaScript using the Typescript compiler, run the following command.
+>> tsc <file_name>.ts
+
+The command will create a file <file_name>.js which contains the transpiled code.
+
+If we've the following content in our .ts file, 
+
+let message = 'Hello World';
+console.log(message)
+
+We might've noticed an error over there (on hovering over the message variable which shows red-underline.), 
+ "Cannot redeclare block-scoped variable 'message' "
+
+ This happens because the file is treated as a script rather than a module. A module has its own scope whereas 
+ scripts share the global scope. To get rid of this error, we need to add an export statement at the top which 
+ exports nothing.
+
+ By adding an import or export statement, TypeScript treats that file as a module instead of a script.
+
+ If we modify our .ts file like below, 
+
+ export {}
+ let message = 'Hello World';
+ console.log(message)
+
+ The error will disappear & the change will be reflected in the .js file as well.
+
+ Variable Types in TypeScript :- 
+
+ to declare a variable with type in TS,
+ Syntax -->  let variableName : datatype = value
+ Example --> let isBeginner : boolean = true 
+ 
+ we have another type called `any`. That type does not do any
+
+ let myVariable : any = 10
+  
+ With myVariable, a number of errors can occur. Say we do something as below.
+ 
+ console.log(myVariable.name)
+ myVariable();
+ myVariable.toUpperCase();
+
+ TypeScript will not force us to do any checking before we try to call, construct or access properties on these values.
+ Therefore, it won't throw any error because our variable is off type `any`. To tackle this issue, 
+ TypeScript 3.0 introduced a new type called `unknown`.
+
+ `unknown` type is very similar to the `any` type. So, any value is assignable to type unknown. However, you can't
+ access any properties off of an `unknown` type nor can you call or construct them.
+
+ let myVariable: unknown = 10;
+ 
+ console.log(myVariable.name);
+ myVariable();
+ myVariable.toUpperCase();
+
+ If we change the variable to type `unknown` from type `any`, we'll get the errors right away. 
+ 
+ Error => 'myVariable' is of type 'unknown'. To be able to get rid of the errors, we need to 
+ use a type assertion to convince the type system that we know better.
+
+ Make change as follows, 
+
+ (myVariable as string).toUpperCase();
+
+ Now, TypeScript assumes that we've made the necessary check. Type assertion is similar to type casting 
+ in other languages. We're saying that myVariable should be treated as a string and then the toUpperCase 
+ method can be applied.
+
+TypeScript also has the ability to specify union of types for the same variable.
+
+example :- let multitype: number | boolean;
+           multiType = 20;
+           multiType = true;
+
+A use case for specifying multiple types would be when a value is not under your control. It could come from 
+a library, from an API which might send a numeric value as a string value or from user inputs.
+
+In that case, we might have a question as to why should we use multiple types (a.k.a union of types) 
+instead of just any type ?
+
+> We could have easily written like this, 
+
+  let anyType: any;
+  anyType = 20;
+  anyType = true;
+
+  There are two reasons mainly for that :- 
+
+  1) The UNION types restrict to the specified types whereas the any type has no restrictions.
+  2) Intellisense support
+
+  Functions in TypeScript :-
+  ****************************
+
+  function add (num1: number, num2: number): number {
+        return num1 + num2
+  }
+
+  add(5, 10);
+
+  Apart from types, TypeScript also has other great features when it comes to functions :- optional
+  parameters & default parameters.
+
+  In TypeScript, every parameter is assumed to be required by the function.
+
+  If we want a certain parameter to be optional, we simply can add a question mark at the end of the
+  parameter name.
+
+  Like this -> function add(num1: number, num2?: number): number {
+    return num1 + num2;
+  }
+
+> We can have any number of optional parameters, but the condition is that optional parameters must always be 
+  after the required parameters.
+
+> IT IS POSSIBLE to specify an object as a type in TypeScript.
+
+  function fullName(person: {firstName: string, lastName: string}) {
+        console.log(`${person.firstName} ${person.lastName}`)
+  }
+
+  let p = {
+    firstName: 'Bruce',
+    lastName: 'Wayne'
+  }
+
+  fullName(p);
+
+We'll see `Bruce Wayne` printed out in the console. Till now, everything works as expected and that is fine.
+
+But right now, the person parameter has just two properties. So, it is not really a problem to define the function.
+But, imagine an object that has five to ten different properties. For example - an address object which contains 
+line1 to line3, city, state, country, postal code, telephone and so on. And if that doesn't make it worse, imagine 
+having so many functions that use the same address object as its parameter.
+
+The code will start to look clumsy and code maintenance will be difficult.
+
+As a solution to that, we've interfaces in TypeScript. We can create an interface of the person object and use that 
+interface as a type for the function parameter.
+
+CODE :- 
+
+interface Person {
+    firstName: string;
+    lastName: string
+}
+
+function fullName(person: Person) {
+    console.log(`${person.firstName} ${person.lastName}`)
+}
+
+let p = {
+firstName: 'Steve',
+lastName: 'Rogers'
+}
+
+fullName(p)
+
+>> We can see that the code looks way more cleaner now. The same interface can easily be used as a type in multiple 
+   functions. And any changes to the Person type happens at one place ; definitely easier to maintain the code.
+
+It is also possible to specify that a property of the interface is optional. Simply, add a question mark to the end 
+of the corresponding property
+
+interface Person {
+    firstName: string;
+    lastName?: string
+}
+
+A very straightforward use case for optional properties is forms. 
+
+For example, a Registration form. There can be specific type of data that the registration form is supposed to gather for 
+which you can use an interface, but not all form fields are mandatory. Optional properties can be used in such situations.
+
+
+
+Access modifiers are basically keywords that set the accessibility of properties and methods in a class.
+
+
+
+public member - can be accessed anywhere throughout the program. by default, each class member is public (i.e can be accessed throughout the program)
+private member - cannot be accessed outside of it's containing class. Also, a private member cannot be accessed in the derived class.
+
+Sometimes, we want a derived class to have access to the base class properties, but the property should not be accessible outside the classes. In such 
+scenarios, we use the `protected` access modifiers. 
+
+
+

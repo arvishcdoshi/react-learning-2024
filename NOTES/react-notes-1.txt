@@ -1,0 +1,1005 @@
+https://github.com/facebook/create-react-app
+
+>> Create-React-App is a command line interface tool that allows us to quickly
+   create and run React Applications with no configuration.
+
+>> What that means is we simply run a command and an entire React project is 
+   created for us.
+
+* What is NPX ? 
+-> NPX is an npm package runner which gets installed when you install Node.
+   And that is how we're directly able to run, create React App without 
+   having to install it. NPX takes care of that for us.
+
+* package.json 
+-> This files contain the dependencies and the scripts required for the project.
+   
+* package-lock.json 
+-> Based on whether we have just `npm` or `yarn` as a package manager, we're gonna see yarn-lock or package-lock files.
+-> They simply ensure consistent installation of your dependencies.
+
+* node_modules
+-> The folder in which all the depencencies are installed. Generated when we run `npm install` or `create-react-app`
+   command.
+
+What is ReactDOM.render( <App />, document.getElementById('root) ) in index.js ?
+> Here, we specify the root component which is <App /> and the DOM element which'll 
+  be controlled by React. The DOM element in our case is an element with the ID = root 
+  which is defined in index.html. We call this div element as the Root DOM node because 
+  everything inside it will be controlled by React.
+
+> For the Hello World component (see video 2), the App component is rendered inside the 
+  root DOM node.
+
+> ReactDOM renders the App component on to the Root DOM node.
+
+> There's one component to contain every other component. The containing component is the 
+  root component and is usually named as App component in your application.
+
+* Functional Component & Class Component 
+-> What is the advantage of using one over the other and when 
+   exactly should you use a particular component type ?
+
+-> Earlier, Functional components were stateless. But, Hooks are a new 
+   feature proposal that lets you use state and other React features 
+   without writing a class.
+
+Before jumping in to hooks - few things to consider 
+  - learn how to use state, lifecycle methods and `this` binding in Class components.
+
+* JSX - JavaScript XML - Extension to the JavaScript language syntax.
+- Write XML-like code for elements and components.
+- JSX tags have a tag name, attributes, and children.
+- JSX ultimately transpiles to pure JavaScript which is understood by the browsers.
+
+- Each JSX element is just syntactic sugar for calling React.CreateElement
+
+- Props which is the short form for properties is the optional input that your component 
+  can accept. It also allows the component to be dynamic.
+
+- Props is just an object that contains the attributes and their values which have been 
+  passed from the parent component. They are used to make the component re-usable.
+
+- Unlike the functional component where we specify the props parameter ; In a class 
+  component the properties are available through `this.props` which is reserved in class components.
+
+- Understand `props.children` from here --> `https://codeburst.io/a-quick-intro-to-reacts-props-children-cb3d2fce4891`
+
+- Props are immutable.
+- Now, we might have a question, if props are immutable how do we maintain component data that might change 
+  over time ?
+
+- The answer to this is `State`.
+
+- props vs state 
+
+  : Props get passed to the component while state is managed within the component.
+  
+  : Because a parent usually passes down the props to the child component, 
+    props are immutable. The parent owns the props and cannot be changed 
+    by the children.
+
+  : State on the other hand is managed within the component and hence the 
+    component has fully control to change the state.
+
+  : In functional components, props can be accessed using the props parameter
+    and in class components props can be accessed using this.props.
+
+  : State on the other hand can be accessed using the useState hook in functional 
+    components & this.state in class components.
+
+  : A state is nothing but an object that is privately maintained inside a component.
+  : A state can influence what is rendered in the browser.
+
+- When you've to change the state of a component, we need to use the `setState` method.
+- Calls made to `setState` are Asynchronous.
+
+- Always make use of setState and never modify the state directly.
+- If you have a code that must be executed after the state has been updated, 
+  place that code in the callback function which is the second argument to the 
+  setState method.
+
+
+For below 2 points, watch video 11 from 10:20 - 11:35 min and read again.
+ - React may group multiple `setState` calls into a single update for better performance.
+ - Therefore whenever you have to update the state based on the previous state, we need to pass 
+   function as an argument to setState method instead of passing in an object.
+
+Destructuring :- 
+ - It is an ES6 feature that makes it possible to unpack values from arrays 
+   or properties from objects into distinct variables.
+
+ - In React, destructuring props & state improves code readibility.
+ - Destructuring in a functional based component happens in 2 ways - first in the 
+   functional parameter & second way is to destructure it in the function body.
+
+ - 1st WAY --> const Greet = ({name, heroName}) => { 
+    return (
+    <div>
+    <h1>Hello {name} a.k.a {heroName}</h1> 
+    </div>
+    )
+  }
+
+-  2nd WAY --> const Greet = props => { 
+    const {name, heroName} = props
+    return (
+    <div>
+    <h1>Hello {name} a.k.a {heroName}</h1> 
+    </div>
+)
+}
+
+In class components, we generally tend to destructure props or state in the 
+render method.
+
+For ex, : const {name, heroName} = this.props
+
+We are simply extracting the necessary props. Our props object could contain 10
+different props but you can destructure only the ones you wish to use in your 
+component.
+
+Similarly, we might also have a number of state properties. Can be destructured in the 
+similar way as above.
+
+Understand Constructors with React Components --> https://www.knowledgehut.com/blog/web-development/understanding-constructors-with-react-components
+
+Binding Event Handlers :- `https://www.geeksforgeeks.org/reactjs-binding-event-handlers/`
+
+1st Option -> Binding in the render method. 
+              Use the bind keyword and bind the handler in the render method.
+           : Although this option works perfectly fine. Every update to the 
+             state will cause the component to rerender. This in-turn will
+             generate a brand new event handler on every render. 
+
+           : Although the impact on performance is not severe in small applications.
+             It could be troublesome in large applications and components that contain 
+             nested children components.
+
+2nd Option -> To use arrow functions in the render method.
+
+           : This approach is simply calling the event handler in the arrow function body.
+           : Similar to the first approach, this also has performance implications in some 
+             scenarios.
+
+3rd Option -> This approach deals with binding the event handler in the constructor 
+              (i.e class constructor )
+              as opposed to binding in the render method.
+
+           : Because the binding happens once in the constructor, this approach is better 
+             compared to binding in the render method.
+
+4th Option -> To use an arrow function as a class property.
+
+super(props) will call the base class constructor. In our component, we have access to this.props only 
+after we have initially called super passing in the props as an argument.
+
+
+: Till now, we've seen how a parent component can pass down props to its children components.
+: Any data in the parent component, when passed as props is available in the children components.
+  Now, what if a child component wanted to communicate with the parent component ?
+  - We still use props for this, but this time we pass in a reference to a method as props to the 
+    child component.
+
+: In nutshell, we wish to have a child component calling a parent component's method.
+  Can be achieved using props. The only difference this time is we pass the method 
+  itself as a prop to the child component. We use the attribute `greetHandler` for that.
+
+  See files --> ParentComponent.js & ChildComponent.js 
+  : There in, we've successfully called a method in the parent component from a button 
+    in the child component by passing the method as props to the child component.
+
+  How to pass a parameter when calling the parent method from the child component ?
+  : Can use an arrow function in the return statement. Arrow function syntax is the 
+    simplest way to pass parameters from the child component to the parent component.
+    
+  : Again, refer the files --> ParentComponent.js & ChildComponent.js where in we have 
+    successfully passed a parameter from the child to the parent.
+
+4 approaches for conditional rendering :-
+  - if/else, element variables, ternary conditional operator, short circuit operator.
+
+Element Variables - In this approach, we use JavaScript variables to store elements. This 
+                    will also help us conditionally render the entire component or only a 
+                    part of the component as well.
+
+TIP - It's always good to refactor the JSX into a separate component.
+
+
+ - Why do we need a KEY prop ?
+ - Keys help React identify which items in a list have changed or added or removed and plays
+   a crucial role in handling UI updates efficiently.
+
+The key prop is a special attribute we need to include when creating lists of elements.
+Keys give the elements a stable identity.
+An important point to keep in mind about key prop is that they are not accessible in the
+child components.
+
+Key prop is something React needs to render the list efficiently. If we're trying to pass 
+down a value to be used in the child component, we must pass it as a different prop. KEY 
+prop is reserved.
+
+Styling React Components - 4 approaches (3 to be discussed in the course)
+
+1. CSS StyleSheets --> files to look in -> Stylesheet.js & myStyles.css
+2. Inline styling  --> Create an object and apply it to the style attribute -> check Inline.js file 
+3. CSS Modules  --> files to look in --> appStyles.css, appStyles.modules.css
+4. CSS in JS Libraries
+
+In regular HTML, form elements like input, textarea & so on are responsible on their own to handle 
+the user input and update their respective values, but what we want is for React to control the 
+form elements instead. Such form elements whose value is controlled by React is called a
+controlled component.
+
+When we assign a handler to the onChange event, the event itself is passed as a parameter to the 
+handler. (Check `handleUsernameChange` function in Form.js file)
+
+When we dismiss the alert , the page refreshes and the filled in data is lost. To avoid this, we 
+simply add an `event.preventDefault` call. This will prevent default behaviour of form submission.
+
+As a part of code cleanup, it's always good to destructure the state properties in the render method.
+
+When we create a React Component, the component goes through several stages in its lifecycle. React provides 
+us with built in methods that we can override at particular stages in the life cycle.
+
+Lifecycle method available for a class component :- Those methods can be classified in 4 phases :- 
+1) Mounting  - These methods are called when an instance of a component is being created and inserted into the DOM.
+2) Updating  - These methods are called when a component is being re-rendered as a result of changes to either its props or state.
+3) Unmounting - These lifecycle method is called when a component is being removed from the DOM.
+4) Error Handling - These methods are called when there is an error during rendering in a lifecycle method or in the constructor of 
+                    any child component.
+ 
+1) Mounting lifecycle methods (Check LifeCycleA.js & LifeCycleB.js files to understand these things)
+   - constructor (props) -- A special function that'll get called whenever a new component is created.
+   - static getDerivedStateFromProps( props, state) -- When the state of the component depends on changes in props over time. We can use this method to set the state.
+   - render() -- We simply read this.props and this.state and return JSX which describes the UI.
+   - componentDidMount() -- This method is called only once in the whole lifecycle of a given component and it is invoked immediately after a component and all its
+                            children components have been rendered to the DOM. We can use this method to interact with the DOM or perform any Ajax calls to load the data.
+                            It is a good place to perform initialization that requires DOM nodes and also load data by making network requests.
+
+2) Updating lifecycle methods 
+   - static getDerivedStateFromProps(props, state) -- Receives state and props as a parameter and has to return either null or an object that represents the updated state 
+                                                      component. Called every time a component is re-rendered. One of the more rarely used methods in the updating phase.
+   
+   - shouldComponentUpdate(nextProps, nextState) -- This method receives the updated props and state and the purpose of this method is it dictates if at all the component 
+                                                    should re-render or not. By default, all class components will re-render whenever the props they receive or their state 
+                                                    changes. This method can prevent that default behaviour by returning `False`. What we can do in this method is compare 
+                                                    existing props and state values with the next props and state values and return `True` or `False` to let React know 
+                                                    whether the component should update or not. This method is basically for performance optimization.
+   
+   - render()
+   - getSnapshotBeforeUpdate(prevProps, prevState) -- Accepts prevProps and prevState as its parameters and is called right before the changes from the Virtual DOM are to be 
+                                                      reflected in the DOM. We would use this method to capture some information from the DOM. For example, we can read the 
+                                                      user's scroll position and after the update, maintain that scroll position by performing some calculations. This method 
+                                                      will either return null or return a value. The returned value be passed as the third parameter to the next method in the 
+                                                      list (See below.) In nutshell, this method is used to read the current DOM state and returns a value or NULL.
+
+   - componentDidUpdate(prevProps, prevState, snapshot) --  This method is called after the render is finished in the re-render cycles. This means we can be sure that the
+                                                            component and all its sub-components have properly rendered itself after the update. Accepts 3 parameters - the 
+                                                            snapshot one is the value returned from the `getSnapshotBeforeUpdate` method. This method is guaranteed to be 
+                                                            called only once in each re-render cycle. We can use these method to perform AJAX calls. Before making the call, 
+                                                            we need to compare the previous props with the new props and then decide whether to make the AJAX call or not.
+                                                            If we don't compare we might make unwanted requests which is not a good thing.  
+                                                            
+
+NOTE :- `https://stackoverflow.com/questions/50819162/why-is-my-function-being-called-twice-in-react`
+
+3) Unmounting phase method
+   - componentWillUnMount -- This method is immediately invoked before a component is unmounted and destroyed.
+                             With this method, we can perform any cleanup tasks like cancelling any network 
+                             requests, cancelling any subscriptions and also invalidating timers from setTimeout
+                             & setInterval.
+
+4) Error handling phase methods
+   - static getDerivedStateFromError(error)
+   - componentDidCatch(error, info)
+
+     - These two methods are called when there is an error either during rendering, in a lifecycle method, or in 
+       the constructor of any child component.
+
+React Fragments :-
+
+- Fragments basically lets you group a list of children elements without adding extra nodes to the DOM.
+- FragmentDemo.js --> If we add <div> to enclose h1 & p, there will be an extra div tag added after the app.js div.
+                      To remove that extra node being added, we use `React.Fragment` instead. 
+
+So far, we've creating Class Components by extending the `Component` class from React. (for ex - class App extends Component)
+There is 1 more class from which we can extend. And that is `PureComponent`.
+
+What is the difference between the `Component` class and the `PureComponent` class ?
+> Look at the files -- ParentComp.js, PureComp.js, RegComp.js -- What we're concerned about in those examples though is when 
+  the render method is called in each of the components.
+
+  All 3 components are like this :- 
+   - class ParentComp extends Component
+   - class RegComp extends Component
+   - class PureComp extends PureComponent
+
+> After adding necessary console.log statements and rendering the ParentComp, we observe --> 
+  - Initially we've Parent Render, Regular Component render & Pure component render.
+  - But after that, every 2 seconds the setState method is called which will re-render the parent component.
+    And if the parent component re-renders, the child components will also re-render unless we return `False` from 
+    shouldComponentUpdate.
+  - So, ideally we should see the render from both regular & pure components being logged. However, that's not the case.
+    EVERY 2 seconds, ParentComp & the RegComp are re-rendered but the PureComp is never re-rendered.   
+
+  THIS IS THE DIFFERENCE BETWEEN THE Regular Component Class & the Pure Component Class. 
+
+   - A regular component does not implement the `shouldComponentUpdate` method. It always returns `True` by default.
+   - A pure component on the other hand implements `shouldComponentUpdate` with a shallow prop and state comparision. (%%%^)
+
+   What exactly is Shallow props and state comparision ?
+   > We can get more idea of it with respect to Primitive & Complex types.
+
+   > For two primitive types a & b like numbers,
+     strings & boolean. a (SC) b (i.e read as a shallowComparision b) returns true if a & b have the same value and are of the same type. 
+     For example, if `a` and `b` are both strings with the value `Arvish`, the shallow comparision returns True.
+
+   > For complex types like objects & arrays, a (SC) b returns True if a & b reference the exact same object.
+     Consider the examples below to understand it.
+
+     var a = [1,2,3];
+     var b = [1,2,3];
+     var c = a;
+
+     var ab_eq = (a === b); // false because even though the items in both the arrays are the same, those 2 arrays do not reference the same object.
+     var ac_eq = (a === c); // true because they point to the same object.
+
+     Same is the case with objects as well.
+
+     var a = { x:1, y:2 };
+     var b = { x:1, y:2 };
+     var c = a;
+
+     var ab_eq = (a === b); // false 
+     var ac_eq = (a === c); // true 
+
+     Continuing from (%%%^) :-
+     >  It does a shallow comparision of previous state with current state & previous props with current props.
+        And ONLY WHEN the shallow comparision indicates there is a difference , THE COMPONENT WILL RE-RENDER.
+
+     In our example, we're dealing with primitive types & props comparision. We're sending a prop which is of type
+     string and has a value of `Arvish`. Every 2 seconds the pure component sees that the previousProp value of `Arvish`
+     is no different from the currentProp value of `Arvish` AND HENCE DOES NOT RE-RENDER.
+
+     And because a regular component does not implement this check, IT'LL ALWAYS RE-RENDER. 
+
+     What we've seen is a shallow comparision of Props, but it's pretty much the same for state comparision as well.
+
+     We shall now change the ParentComponent to extend PureComponent instead of the RegularComponent class.
+     Like this --> class ParentComp extends PureComponent
+
+     If we now take a look at the browser, we'll see that there is the initial rendering of all the components :- Parent, Regular & Pure.
+     This time, two seconds later there's no re-render.
+
+     The ParentComp checks previous state with current state and sees that THERE'S NO DIFFERENCE and hence THERE'S NO RE-RENDER.
+     But, what we should keep in mind is if the Parent doesn't re-render, the children also will never re-render and that's why we didn't 
+     see any statement logs in the two second intervals.
+
+     So, now we can answer WHY to use PureComponents ? 
+     > Pure components by preventing unnecessary renders can give you a performance boost in certain scenarios.
+     > For example, let's say you're rendering a list of 50 items. By not re-rendering them when it is not required, 
+       they're going to have a good performance boost.
+
+       A KEY POINT to keep in mind is that you should not mutate objects or arrays in props or state.
+       For example, if you need to add a new item to the list, we shouldn't mutate it by pushing the item 
+       into the list. The reference to the array never changes and because PureComponent's only check for that,
+       the component will not re-render even if there's a difference. ALWAYS RETURN A NEW OBJECT OR ARRAY WHEN 
+       DEALING WITH PURE COMPONENTS.
+
+       It is also a good idea to ensure that all the children components are also pure to avoid unexpected behaviour.
+       When using PureComponents, never mutate the state. Always return a new object that reflects the new state.
+
+
+Pure Components only re-render the class components when there is a difference in the shallow comparision of props and 
+state. This of-course results in a performance improvement. Pure components THOUGH ONLY WORK WITH CLASS BASED COMPONENTS.
+
+It would be nice if we could achieve the same in functional components as well. That is where React.MEMO comes into the picture.
+What PureComponents is to class based components, MEMO is to functional components.
+
+REFS - They make it possible to access DOM nodes directly within react. They're used to access & modify the DOM elements in the 
+       React Application. It creates a reference to the elements and uses it to modify them.
+
+       Refs are a function provided by React to access the DOM element and the React elements created in components. They are used 
+       in cases where we want to change the value of a child component, without making use of props and state.
+
+ Ex  - We might want to achieve something like this --> As soon as the page loads, we a particular input field to be focused.
+
+Second possible use case for using refs would be to fetch the input value.
+One way to create access refs is using `React.createRef()`. React also supports a second way to set refs which is called as callback refs.
+Check file - RefsDemo.js to learn how to add Refs to normal HTML element like the input element.
+
+It is also possible to add a ref to a class component. (If at all we need a ref to a child component from a parent component)
+Check Files - Input.js & FocusInput.js
+
+(video 30) => Forwarding Refs - It is a technique for automatically passing a ref through a component to one of its children. 
+Check Files - FRInput.js & FRParentInput.js
+
+What we want to achieve is when we click on the button in the parent component, the input in the child component should 
+receive focus. Unlike the last video (i.e video no 29 -- files = Input.js & FocusInput.js) where the ref was pointing to 
+the class component, in this video ( video no 30 ), we'll use the forwarding ref technique to allow the parent component
+to directly reference the native input element. (i.e from Child to Parent)
+
+Difference between video 29 & video 30 :- 
+- For anyone who is confused between the previous video and this, let me break it down for you.
+'ref 'in React  is basically used to access HTML nodes, in the previous we learned that refs can also be used to access components in React, in a similar way we did the HTML element. 
+In this video we referenced the Child Component as well, but then we used React.forwardRef() to forward the reference from the child component to the input element inside the component.
+
+Thus we were directly able to access the focus() method of <input> tag directly in our Parent Component via this.inputRef.current.focus(). if we would'nt have forwarded the ref we 
+could'nt have accessed it directly via  the current object.
+
+REMEMBER - Every functional component receives props as it's parameter. 
+ALSO - When a component is passed as a parameter to the createRef method, 
+       it receives the ref attribute as its second parameter (check file FRInput.js)
+       That ref parameter will point to the value of the ref attribute from the 
+       Parent Component. 
+
+In FRParentInput.js, the ref is being forwarded from the parent component to the 
+native input element.
+
+React Portals :-
+- They provide a way to render children into a DOM node that exists outside the DOM hierarchy of the parent 
+  component.
+
+- So far, we've had one DOM element in our HTML that we were mounting the React application into. Check
+  public/index.html, we can see <div id="root"></div> . In index.js, we use ReactDom.render and mount our 
+  app component on to the root element. 
+
+- When we look at the browser, In the DOM tree every single React component in our application falls under 
+  the root element i.e the div element with the ID = root.
+
+- What React portals provide is the ability to BREAK OUT of this DOM tree. So, we can render a component onto a 
+  DOM node that is not under this root element.
+
+- In our React application, even though all the components are children to the app component and the app 
+  component is mounted onto the Root DOM node, it is possible to break away from that and mount on any DOM 
+  node that we wish to using react portals.
+
+
+The error handling phase includes two lifecycle methods.
+ - static getDerivedStateFromError(error)
+ - componentDidCatch(error, info)
+
+- The first parameter to createPortal method can be any element that React can render. It can be numbers, 
+  strings, JSX or even components.
+
+
+Runtime errors during rendering could put our application in a broken state. React basically unmounts the 
+whole react component tree. What would be great is if we could catch the errors anywhere in the component 
+tree and display a fallback UI. This is where error boundaries take the spotlight.
+
+What exactly is the error boundary ?
+> A class component that implements either one or both of the lifecycle methods `getDerivedStateFromError`
+  or `componentDidCatch` becomes an error boundary.
+
+  getDerivedStateFromError - Used to render a fallback UI after an error is thrown.
+  componentDidCatch        - Used to log the error information.
+
+  Error boundaries are React Components that catch JavaScript error in their child component tree, log those 
+  errors and display a fall-back UI.
+
+  The placement of the error boundary also matters as it controls if the entire app should have the fall-back 
+  UI or just the component causing the problem.
+
+Error boundaries catch errors during rendering in lifecycle methods and in the constructors of the whole tree 
+below them. However, they do not catch errors inside event handlers. If we have an onClick handler and wish to 
+catch and error, we just need to use the regular try-catch statements and not error boundaries.
+
+Higher Order Components :-
+
+ > In the files - clickCounter & HoverCounter, we have the counter functionality which could have been re-used 
+   but instead has been duplicated. So if 10 different components needed a counter functionality, we'd be writing 
+   the exact same code over & over again. 
+
+ > The question now is how can we re-use this code ? - The immediate thought is to lift this state to the parent 
+   component & pass down the handler as a prop. So, it means defining the counter functionality in the app component
+   and provide the state & the handler as props to clickCounter & HoverCounter
+
+ > This would definitely work in our scenario where we have the counter components as children of the same parent.
+   But if the counter components are scattered in the React Component tree, lifting the state would not be a proper 
+   solution.
+
+ > There is a need to share common functionality between components without repeating code and that is where the
+   concept of higher-order components comes into picture.
+
+ > A higher order component is a pattern where a function takes a component as an argument and returns a new component.
+   Something like this - const newComponent = higherOrderComponent( originalComponent )
+
+   Typically, an HOC adds additional data or functionality to the original component so the new component can also be 
+   referred to as enhanced component.
+
+> In video 34, until 5:32 min - Our HOC (withCounter.js) injects a `name` prop to any component required. For our counter 
+  example though, that's not really what we want. We want the counter functionality to be shared amongst the components.
+
+  After making the required changes (till 6:38 min), in HOC we need to pass down the state and the incrementCount method as 
+  props so that the original component can make use of that functionality. The HOC pattern is used to share common functionality 
+  between components without having to repeat the code.
+
+  As we've learnt till now that the HOC pattern is used to share common functionality between components without having to repeat 
+  the code. There's an another pattern for sharing code between react components which is the `render props` pattern.
+
+> Video 37 => At 3:48 min => In React, it is possible to use a prop whose value is a function to control what is actually rendered 
+                             by a component. THIS IS PRETTY MUCH WHAT THE RENDER PROPS PATTERN IS BASED ON !
+
+  What is Render Props ? 
+  > The term `render prop` refers to a technique for sharing code between React Components using a prop whose value is a function. 
+
+Passing down props manually at every level becomes a problem for certain types of props such as language preference, UI theme & 
+authenticated user which are pretty much required by many components in our application. What would be nice is if we could directly 
+send data to the required component without having to manually drill down the props through evety level of the component tree. 
+THIS IS WHERE `CONTEXT` comes into picture.
+
+> Context provides a way to pass data through the component tree without having to pass props down manually at every level.
+> 3 steps to follow in here 
+  (i)   Create the Context
+  (ii)  Provide a Context value 
+  (iii) Consume the Context value in the necessary components
+
+> Every Context object created using the createContext method comes with a provider and a consumer React component.
+
+Two more points about the Context API: 
+ - We can set a default value to our context. It is set while creating the context. Comment out the Provider component to see 
+   the default value. Default value will only be used when a component does not have a matching provider above it in the 
+   component tree.
+
+ - We've used the consumer component to consume the context value. There's another way to do that i.e the context type property
+   on a class.
+
+ - ContextType syntax looks much simpler than consumer component syntax. There are however two limitations with context type.
+    - 1) It only works with class components.
+    - 2) Second limitation is you can only subscribe to a single context using context type.
+
+   Many a times in our application, we need to read more than one context in which scenario the consumer component is the way
+   to go.
+
+ - When we change state (with `setState`), the component re-renders.
+
+What are Hooks ?
+> Hooks are a new feature addition in React version 16.8 which allow us to use React features without having to write a class.
+
+For ex - state of a component
+Earlier - we could use `state` only within class components. With hooks, it is now possible to use state and also other React
+features without writing a class. Hooks DON'T WORK inside classes.
+
+Why HOOKS ?
+> Reason-1 : This reason is more related to JavaScript than React itself.
+    - Necessary to understand how `` keyword works in JavaScript.
+    - Remember to bind event handlers in class components.
+    - Classes don't minify very well and make hot reloading very unreliable.
+
+    - With HOOKS, since we're not working with classes anymore, we'll not have to face these 
+      problems.
+
+
+> Reason-2 : There's no particular way to reuse stateful component logic.
+    - HOC and render props patterns do address this problem, but we'd have to restructure our components which could result in 
+      awkward looking code.
+
+    - We end up wrapping our components with several other components to share the functionality.
+      This makes the code harder to follow. There's a need to share the stateful logic in a better way.
+
+    - HOOKS help us in this aspect by allowing us to reuse stateful logic without changing our component hierarchy.
+
+
+> Reason-3 : The final reason is to do with how code is placed in a component and the fact that complex components become hard 
+             to understand.
+
+    - When we had to create components complex scenarios such as data fetching & subscribing to events, related code is not 
+      organized in one place, but scattered across different lifecycle methods.
+
+    - For example, data fetching is usually done in componentDidMount and sometimes also in componentDidUpdate.
+    - If we've to set event listeners, you set them up in componentDidMount and unsubscribe in componentWillUnMount
+
+    - Because of the stateful logic, in many cases it's not possible to break this components into smaller ones.
+      It'd be so much better if all the related code was together. 
+
+    - This is another problem that HOOKS solves. Rather than forcing a split based on lifecycle methods, HOOKS let us split
+      one component into smaller functions based on what pieces are related.
+
+
+> A Hook is just a special function that lets you hook into React features. So `useState` is a hook that lets you add react state to 
+  functional components.
+
+  The useState hook returns an array with two elements. The first element is the current value of the state, and the second element is 
+  a state setter function. We can call the setter function with a new value to set the state which will in-turn cause the component to 
+  re-render.
+
+> Anytime if we need to update the state value based on the previous state value, always go with the option of passing in a function
+  to the stateSetter that'll set the new state value. Here, the setter function receives the previous state as an argument to the function.
+
+> In classes, the state is always an object.
+> With the useState hook, A state variable can be a string, a number, a boolean, an object or even an array. We can use any of these types based on our
+  requirement.
+
+  In Video 47 (React Hooks - useState with Object), from 4:30, 
+  > When we console the state, we'll see that by default both firstName & lastName set to empty strings.
+
+  > But when we start typing out the firstName, we observe that the lastName property is removed from the
+    state variable.
+
+  > If we start typing out the lastName, the firstName property disappears from the state variable.
+   
+  > THE REASON THIS HAPPENS IS BECAUSE `useState` does not automatically merge and update the object.
+    This is a key difference to `setState` which we came across in Class components. `setState` will merge the state whereas the 
+    `useState` hook setter function will not merge the state. We'll have to do it manually. We can use the spread operator to
+    handle the manual merge.
+
+    Code'll be like this --> 
+     onChange={e => setName( { ...name, firstName: e.target.value })}
+     onChange={e => setName( { ...name, lastName: e.target.value })}
+
+    How we interpret this is, 'Copy every property in the name object and then just overwrite the first name field with a different 
+    value.' same for the other line regarding lastName.
+
+    HENCE, the key point here is `The setter function provided by the useState hook does not automatically merge and update objects.
+    We have to manually merge it ourselves and then pass the value to the setter function.`
+
+  > In video 48 - React Hooks (useState with Array),
+     Whenever the `addItem` is called, we make a copy of all the items in the array using the spread operator.
+     To that list of copied items, we simply append another object. That way, we're not overwriting the original array.
+    
+
+useEffect Hook :-
+------------------
+
+> It'd be nice to not repeat code and at the same time group together only the related code. That is where the effect hook 
+  comes into picture.
+
+> The effect hook lets us perform side effects in functional components. It is a close replacement for `componentDidMount`, 
+  `componentDidUpdate` and `componentWillUnMount`. Three lifecycle methods can be handled by the useEffect hook.
+
+  Video 50 - We learn how to use the useEffect hook as a feature that can mimic `componentDidMount` and `componentDidUpdate`
+             in functional components. ( File - HookCounterOne.js )
+
+Just like useState, useEffect is also a function. We simply have to call it. To this useEffect hook, we pass in a parameter.
+This parameter is a function which gets executed after every render of the component. When we specify useEffect, we're
+basically requesting React to execute the function that is passed as an argument every time the component renders. 
+
+`useEffect RUNS AFTER EVERY SINGLE RENDER OF THE COMPONENT`. We can ofcourse customize that.
+
+In some cases, applying the effect after every render might create a performance problem. So, we need a way to conditionally 
+run an effect from a functional component.
+
+Video - 51
+-----------
+
+In ClassCounterOne.js, we've a class component with a state variable count initialized to zero. In the render function, we've a 
+button and on click of that button, we increment the count value by one. When the value increments, the state changes which
+causes the component to re-render and `componentDidUpdate` will execute setting the document title to the updated counter value.
+
+We must add a condition to conditionally update the title only when the appropriate variable changes. i.e only when the count value 
+changes. 
+
+We'll have to do the same in the useEffect hook example (HookCounterOne.js file)
+Because there's no necesssity to update the title if it is not even changing between renders.
+
+We've do the changes such that React conditionally runs useEffect only when the count value changes.
+> As we already know that the first parameter to useEffect is a function. 
+> NOW, to conditionally execute an effect we pass in a second parameter. This parameter is an array. 
+> Within this array, we need to specify either props or state that we need to watch for. 
+> Only if those props or states specified in this array were to change, the effect would be executed.
+
+> Therefore, in order to conditionally run an effect specify the second parameter to `useEffect`. The 
+  second parameter is the array of values that the effect depends on. If the values don't change 
+  between renders, the effect is simply not run.
+
+  We can also make changes to run effect only ones. This is similar to mimicking componentDidMount of Class 
+  components with the use of `useEffect` & functional components.
+
+In the Class Component Approach (Video 52 - Until 1:05 min),
+ > Take a note that we've setup the event listener only once and that is in componentDidMount.
+
+In the Functional Component approach (useEffect Hook), 
+ > At 3:22 min, we'll see useEffect consoled from the initial render and now when we move the mouse around, 
+   we can see that the effect is called every time the component re-renders.
+
+ > Here, the effect is called after every re-render unless we specify the dependency array. For our example, 
+   we don't want effect to depend on anything. We want it to be called once on initial render only.
+
+ > The way we achieve that is by simply specifying an empty array as the second parameter to useEffect.
+   What it means is this particulat effect does not depend on any props or state. So, there is just no
+   reason for you to call this effect on re-renders.
+
+ > Once we're done with these changes and check the browser, we'll see that `useEffect` is called only on 
+   initial render & WHEN WE MOVE THE MOUSE AROUND, WE ONLY HAVE THE MOUSE EVENT LOGS. `useEffect` is not 
+   called on subsequent renders. 
+
+
+******* IMP *******
+
+From the last point, there comes a question. 
+
+>>> The setX & setY are called inside logMousePosition, which is inside the useEffect. If useEffect is not
+    called after a re-render how did the logMousePosition got called and state is changed ?
+    
+>>> Another way to ask this is :- If we're restricting useEffect on-load itself then how event listener is 
+    working afterward, as it is nested inside useEffect hook. So if useEffect hook is executing only one
+    time, then how nested function is executing again & again ?? 
+
+
+ANSWER - THE NESTED FUNCTION STILL EXECUTES because the addEventListener method is purely JavaScript. Even
+         though the `useEffect` never executes again after the first rendering, JavaScript knows to listen
+         to the `mousemove` event as it was already set.
+
+         EVENT LISTENERS are attached only once and they keep running until we remove them or reload the
+         page. EVENT LISTENERS in JS are called only once and it continue to listen until is is
+         specifically removed.
+
+         Because when useEffect runs the first (and only) time, it attaches an event listener with a callback function. 
+         That callback function runs every time the mousemove event is triggered, and this is independent of useEffect running 
+         since the listener is already attached. The callback function "logMousePosition" is what is logging to the console everytime 
+         the mouse moves, not useEffect. This listener will continue listening and calling the logMousePosition function until the listener 
+         is explicitly removed somewhere else in the code.
+
+         THEREFORE once the instance of the eventListener has been created, it is supposed to keep an eye on all the 
+         events in future until the listener is removed from the code.
+
+         Read more about that here --> https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events
+                                       https://medium.com/@elizabethkosowski/event-listeners-with-the-event-loop-c8040bb6fb0e
+
+
+useEffect Hook - Video 53 - Mimic `componentWillUnMount` functionality
+************************************************************************
+
+> From 2:05 min, we've a button and the mouse co-ordinates. When we move the mouse around, we can see the co-ordinates updating &
+  the log statements printed every time the mouse moves.
+
+> Now at 2:16 min, we shall click the `Toggle Display` button. This will effectively unMount the component from the DOM. 
+
+> Now, when we try to move the mouse we can see the statement `Mouse event` still being logged. So, even though the component has 
+  been removed, the event listener which belongs to that component is still listening & executing.
+
+> We'll see a warning in the console as well which indicates the same (NOTE - warning might not be visible in new versions of React). 
+  We cannot perform a React state update on an unmounted component. It indicates a memory leak in your application. 
+  
+> In simpler words, React is telling us `Hey you've unmmounted the component, but when you
+  move your mouse around you're asking me to update the state variables for X & Y co-ordinates. The only problem is that component has been 
+  unmounted. When you unmount a component, make sure you cancel all your subscriptions & listeners.` In other words, clean up after your
+  component.
+
+> Now, how do we handle the cleanup code ? --> We're familiar with class components and it was pretty straightforward over there. We had 
+  the `componentWillUnMount` lifecycle hook where we could add `window.removeEventListener`. We've to mimic the same lifecycle functionality 
+  in useEffect.
+
+> The function that is passed to `useEffect` can return a function which will be executed when the component will unmount. So, whatever we 
+  return is basically our cleanup function. Read this to understand more --> https://blog.logrocket.com/understanding-react-useeffect-cleanup-function/
+
+> The point to make note of here is that when you want to execute some component cleanup code, we include it in a function and return that
+  function from the function passed to `useEffect`. The cleanup code can be cancelling subscriptions, timers or even removing event handlers.
+
+NOTE - When strict mode is on, in development, React runs setup and cleanup on extra time before the actual setup.
+       Read more here --> https://react.dev/reference/react/useEffect#my-effect-runs-twice-when-the-component-mounts
+                          https://stackoverflow.com/questions/53183362/what-is-strictmode-in-react
+
+ Some helpful resources :- 
+* https://developer.mozilla.org/en-US/docs/Web/API/setInterval
+* https://developer.mozilla.org/en-US/docs/Web/API/clearInterval
+* https://www.htmlallthethings.com/blog-posts/why-do-we-use-const-to-declare-arrow-functions-in-javascript#:~:text=Declaring%20Arrow%20Functions%20with%20Const&text=Constant%20variables%20are%20read%2Donly,from%20accidental%20deletion%20or%20manipulation.
+
+
+################ IMP ################
+
+VIDEO 54 - FROM 3:20 MIN ;
+*****************************
+> We need to call the tick method every second.
+
+> This effect is going to fire after every render. If we only want the interval to be set up once on initial render (i.e similar to componentDidMount), we simply pass an empty array 
+  ( i.e [] ) as the dependency list.
+
+> If we now take a look at the browser, we can see that the class counter is working as expected but the hook counter is displaying the value of `1` and not incrementing every second.
+> In our mind, the problem statement is simple. Create an interval once and destroy it once.
+
+> The empty depndency list ensures that the timer is set only once and return function to destroy the timer that we've created. Why then our counter doesn't work as expected ?
+
+REMEMBER --> 
+ If you think dependency array is a way to specify when you want to rerun the effect, you are going to run into problems. 
+ 
+ Instead, dependency array should be thought of as a way to let react know about everything that the effect 
+ must watch for changes.
+
+Therefore, the problem is --> By specifying an empty array, we've basically told React to ignore watching for changes in the count variable.
+So, React goes like -> On initial render, the count value is 0 which implies setCount will set it to 0 + 1 = 1 and that'll be rendered in the 
+browser. Now because the dependency array is set to [], we're telling React that it doesn't have to watch for changes in the count value. Count 
+value is equal to 1 right now and React will just render that value through the different re-render cycles. If we want React (i.e the `useEffect` hook) 
+to keep an eye on a variable, we just have to add it to the dependency array (i.e [count]). And our problem will be solved.
+
+BTW, for this example there is another way to get it working without the dependency list. In the tick function, we use the second form of setCount.
+We get access to previous count and we set previous count + 1. (Read this to understand more --> https://react.dev/reference/react/useState#updating-state-based-on-the-previous-state)
+
+Now since setCount keeps track of the previous count value, we don't have to specify count as a dependency and that array can again be set to [].
+
+`useState & `useEffect` hooks can also be used to fetch data from an API endpoint.
+
+Earlier, in class components we used render props method for the context value to be consumed in nested chiled components.
+
+It can be achieved in a fairly easy manner with the help of `useContext` hook.
+
+We have to call the `useContext` function passing in the context as its argument. useContext returns the context value. So, ideally we should be
+assigning the function call to a variable.
+
+
+useReducer Hook 
+*****************
+
+> This is a hook that is used for state management. We already have useState who does this.
+  `useReducer` is an alternative to `useState`.
+
+> useState is built using useReducer. So useReducer is a more primitive hook compared to useState.
+  
+> Reduce method in JavaScript -->  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
+  The reduce method takes two parameters => the first parameter is the reducer function & the second parameter is an initial
+  value that the reducer function can make use of.
+
+  The reducer function itself accepts two parameters & reduces them down to a single value & then returns that value.
+
+> useReducer (reducer, initialState)  (the useReducer hook takes in 2 arguments. The reducer function & initial state.)
+  
+  newState = reducer(currentState, action)
+
+  With `useReducer`, the reducer function accepts two parameters. currentState & action. And this reducer function will
+  return a new state.
+
+  To put it roughly, the action parameter is what dictates the state transition from the currentState to the new State.
+  We can think of action as an instruction to the reducer function. Based on what the action specifies, the reducer
+  function performs the necessary state transition.
+
+  For our example, we've three actions --> increment, decrement & reset. The convention to execute code based on the
+  action is to use switch statements.
+
+  The useReducer hook on the other hand returns a pair of values => [newState, dispatch]
+  i.e the newState & dispatch method which is basically used to specify the action.
+
+  In nutshell, useReducer is basically changing the state in React components.
+
+  
+Video 63 - useReducer with state & action as objects.
+------------------------------------------------------
+
+What is the advantage of using this particular pattern ?
+> There are 2 scenarios where it might be helpful.
+ 1) The first scenario is concerning the value by which we need to increment or decrement the counter.
+    As of now we've increment by 1 as default. If we want to make it dynamic, it'd be easy if the action 
+    is an object. Right now, our action object has just one property which is action type. We can add a
+    second property called value which should be the number to increment or decrement the counter.
+    Therefore by making use of action as an object, we can use additional data in the reducer function.
+
+ 2) Here, we'll talk about state as an object. Suppose, we wanted to maintain two different counters. That 
+    turns out to be really simple if our state is an object. We can simply add another property to our state. 
+ 
+    At 5:53 min, we've two properties in the state object. We're changing only one at a time. To get the
+    expected output, we've to modify the return statements to merge the state properties. We can do this using 
+    spread operator.
+
+
+THEREFORE, `By using action as an object, we are able to pass additional data to the reducer function. By using 
+            state as an object, we are able to keep track of multiple state variables.`
+
+This approach of maintaining multiple variables in a single state object is suited when dealing with global state.
+
+Here, we've maintained a state object to track two different counters. To update the second counter, we also had to 
+create additional switch cases in the reducer function. This approach is fine. But if we need two counters with the 
+exact same state transitions (i.e increment, decrement or reset), there is a much simpler alternative and that is 
+to use multiple useReducer hooks. (See file - CounterThree.js)
+
+```
+When dealing with multiple state variables that have the same state transitions ((i.e increment, decrement or reset)), 
+it is a good idea to have multiple useReducers making use of the same reducer function. 
+
+This will avoid the complexity of merging the state if it were to be an object and also prevents us from duplicating
+code in the reducer function (like we've already seen in CounterTwo.js)
+```
+
+VIDEO 65 - How to apply `useReducer` with `useContext` to achieve global state management ?
+
+> So far, we've seen examples with `useReducer` for local state management. (i.e at the component level)
+> At some point, we might need to share the state between components - i.e. we might want to work with 
+  global state.
+
+> How can we do that - We can manage global state by combining useReducer along with useContext.
+
+> Consider an application with lot of components. We've App.js which is the root component and nested inside App.js,
+  we've components A,B & C. Let's say each of these components maintain their own counter. We can simply have useReducer 
+  used to implement a counter in all of these components.
+
+  In a different application, we might have a slightly different requirement. The three components i.e A,B & C all need 
+  to implement a Counter. But, this time they need to share the counter value. So instead of implementing three different 
+  counters, we need to implement one counter that is accessible by all the three components.
+
+  One approach to do this is to implement a global counter in App.js and pass in methods as props to the three components.
+  The components can then have handlers that call the props.
+
+  Unfortunately though, real world applications are not this simple. Our components will be nested deep within the component 
+  tree. And when there is deep level of nesting, passing props through every component is not the best solution.
+
+
+    App.js
+--  ******  --
+
+A      B      C
+ 
+       D      E
+
+              F
+
+GOAL - To maintain count state in App.js and modify that state from components A,D & F.
+Two STEPS to Achieve this - 
+  1) To create a counter in App.js using the reducer hook.
+  2) Provide and Consume the counter context in the required components. 
+
+In this implementation, for the `dispatch` method we don't want to `dispatch` any action from the app component.
+
+We want to be able to dispatch actions from the nested components. HERE, we've to make use of context to provide
+the count value and the dispatch method and consume the same from the nested components.
+
+    VIDEO - 66 & 67 - Fetching data from an API endpoint
+*** ---------- ***
+
+> We've already covered data fetching with useEffect hook. However, with useEffect we're using the useState hook.
+  Over here instead of useState, we'll be using the useReducer hook.
+
+> Both `useState` & `useReducer` are used for state management.
+  Video 66 - Data fetching with the useState & useEffect hooks.
+  Video 67 - Data fetching with the useReducer & useEffect hook.
+
+  In Video 66 - We must take a note of the way we're using `useState`. We've declared three variables and depending
+  on the API returning a successful response or an error, we apply the appropriate state transitions.
+
+  In Video 67, we've just replaced `useState` with `useReducer`. In doing so, we've grouped the related state
+  variables together and at the same time, the state transitions are also grouped together.
+
+
+Video 68 - useState vs useReducer 
+---------------------------------
+
+> We already know that both useState and useReducer are used for state management.
+> We must understand when to use `useState` vs when to use `useReducer` :-
+
+ The first scenario depends on the type of the state variable. 
+  -> If we're trying to manage primitive types like `Number, String or Boolean`, useState is a better option.
+     For ex -> If we were to manage the count value as a state variable, useState is a better choice.
+
+  -> If we're going to manage an object or an array, useReducer might be better suited.
+     For Ex -> If we are going to manage a Person object that contains firstName, lastName & age, we're better
+               of using useReducer.
+
+The second scenario depends on the number of state transitions :-
+  -> If we are updating one or two state variables, useState should be fine. BUT, if we start seeing 5 or 10
+     separate setState calls, we should definitely consider moving that logic into a reducer function.
+
+     The main reason behind that is it makes your state transitions predictable. We would be updating several
+     state variables, but all of that would be happening in one place WHICH is the reducer function.
+
+The third scenario depends on how related the state transitions are :-
+  -> Related State Transitions ? -> IF yes, go with useReducer else go with useState.
+     When state transitions are related or say are tied to a specific action, we should choose `useReducer` .
+
+  -> Example of related state transitions - setting loading, error & post states in files (DataFetchingOne.js &
+     DataFetchingTwo.js)
+
+     We noted that all those state variables are updated together either when the data is fetched successfully
+     or when there is an error. With `useReducer`, our code becomes more predictable and more maintainable.
+     If everything were to be managed at different places with useState, it becomes harder to reason about.
+
+The fourth scenario depends on the business logic for the state transition. 
+  
+  -> If your state transition from an old value to a new value requires some business logic or even complex 
+     data transformation and manipulation, we're better of using the reducer hook.
+
+  -> That way, all our logic is localized to the reducer function and we have better separation of concerns.
+     
+     All our component has to do is dispatch the appropriate action. This again makes the code more readable 
+     and maintainable.
+
+The fifth scenario deals with LOCAL vs GLOBAL state.
+
+  -> If we want to maintain local component state, `useState` is a great choice.
+  -> However if we want to maintain global state, that can be altered by components deep in the component tree 
+     `useReducer` is a better option.
+
+     -> We will off-course use the `context` hook, but using the reducer hook over state hook has a very simple advantage.
+        With useReducer => We simply have to pass the one dispatch method down the component tree. That one dispatch method 
+        can update several state variables based on the action type.
+
+     -> With useState however, we would have to pass down multiple update functions ; one for each state.
+      
+  THEREFORE, FOR GLOBAL STATE MANAGEMENT `useReducer` is the better choice. 

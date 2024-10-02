@@ -1,0 +1,655 @@
+*************************************************
+Video 69 - useCallback Hook - WHAT, WHY & HOW ?
+*************************************************
+
+
+Initial structure - App.js has one component in it -- ParentComponent
+
+`ParentComponent` is simply a container for other components. (such as Button, Count & Title)
+The JSX of ParentComponent - Contains 5 components in total of which two are re-used with 
+                             different props.
+
+The children prop in Button component => `props.children` refers to the 'Increment Age' text in the 
+parent component.
+
+In nutshell, ParentComponent has got the following components - 
+   - a title component which simply renders a <h2> tag.
+   - a component to display a person's age & a component to increment the person's age.
+   - a component to display a person's salary & a component to increment the person's salary.
+
+
+WE MIGHT BE THINKING WHY do we need to break this down into 5 components ? Could we not just 
+have all the JSX in the parent component itself and make it simpler. 
+> We definitely could do that but we've written the code in this particular way because we need 
+  to understand about performance optimization & off-course the `useCallback` Hook.
+
+> PERFORMANCE OPTIMIZATION - Here, if we check the logs we see 5 log statements (1 from each component.)
+
+  If we clear the console & increment age, we see that every component is re-rendered even though we only 
+  clicked the increment age. Ideally the count component related to age and the button component for 
+  increment age should re-render. The other three components don't have to re-render. 
+  Similar is the case with salary.
+
+  This isn't really a problem with few components that have simple logic. But, we should consider a scenario
+  where there are lots of components & updating a single component is going to re-render all the 20 or 30 or
+  even 50 components. WE WOULD THEN START SEEING PERFORMANCE ISSUES.
+
+  To improve performance, we have to restrict re-renders to only components that need to re-render.
+  
+  So, how do we optimize this -> The answer is React.Memo , It is a HOC that'll prevent a functional component 
+  from being re-rendered if it's props or state do not change.
+
+  --- NOTE - React.Memo HAS NOTHING TO DO WITH HOOKS. It has been a feature since React Version 16.6 ---
+
+  To use memo, what we can do is when exporting the components, wrap them with React.Memo 
+  We add that in Button, Count & Title components.
+
+  >> If we click increment age now, we'll see fewer logs. But it is still not right. When we increment age, 
+     the button to increment salary is still being re-rendered. If we click on increment salary, VICE-VERSA.
+
+  >> WHY IS THIS HAPPENING ?
+     We see the title component. It has no props or state of its own and hence does not re-render when we
+     increment the age or salary.
+
+     Next, we've count & button related to age. Count accepts age as a prop & button accepts incrementAge as 
+     a prop which is dependent on age. (i.e the setAge setter function is dependent on age.). So, when the age 
+     increments, both the components i.e Count & Button related to age should be re-rendered. BUT, what we see
+     is that the increment salary button also re-renders. The count component for salary though does not 
+     re-render.
+
+     THIS IS BECAUSE a new `incrementSalary` function is created each time the parent component re-renders.
+     
+     ``` IMP ```
+     When dealing with functions, we always have to consider reference equality. Even though the two functions 
+     have the exact same behaviour, it does not mean they're equal to each other. Therefore, the function before 
+     the re-render is different to the function after the re-render and since the function is a prop, React.memo
+     sees that the prop has changed and will not prevent the re-render.
+     ``` IMP ```
+
+     And above is the same case when we increment salary as well. There is a new `incrementAge` function created
+     which will cause the `incrementAge` button to re-render.
+
+     SO, HOW DO WE FIX THIS ? HOW DO WE TELL REACT THAT THERE IS NO NEED TO CREATE A NEW INCREMENT SALARY FUNCTION
+     WHEN WE UPDATE THE AGE.
+
+     >>> THE ANSWER IS `USECALLBACK` HOOK 
+         -------------------------------- 
+
+What is useCallback hook ?
+> It is a hook that'll return a memoized version of the callback function that only changes if one of the dependencies 
+  has changed.
+
+ > If we relate this to our example, it means that the useCallback hook will cache the incrementSalary function and return
+   that if salary is not incremented.
+
+   If the salary does increment, i.e if the dependency has changed, ONLY THEN a new function will be returned.
+
+ > New function is created each rerender, and to solve that function should be memorized using a callback hook
+
+Why do we need useCallback ?
+> It is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders.
+
+> Let's break it down - 
+  -> The first part is that it is useful when passing callbacks, i.e functions like incrementAge & incrementSalary.
+  -> The second part says to optimized child components. We currently have 3 child components that are optimized with React.memo (i.e 
+     Button, Count & Title) to prevent unnecessary re-renders.
+
+  REFERENCE EQUALITY - It is nothing but checking if the functions are equal which is required for our example.
+
+As it turns out, there is another hook which is also concerned with performance optimization and that is the `useMemo` hook.
+In real world applications though, we might sometimes come across logic that takes considerable amount of time for execution.
+i.e a function that isn't good with performance.
+
+Video 70 - From 6:45 min :-
+-----------------------------
+When we click on the other button & still there is a delay with the UI updates. When we click that button, after a second or two the 
+counterTwo increments. THIS IS STRANGE though. Why is counterTwo slow when the isEven has to be called with counterOne only & not counterTwo.
+
+ANSWER - That is because every time the state is updated, the component re-renders. And when the component re-renders, `isEven` function is called 
+         again. The function is slow & hence even when we update counterTwo, the UI update is slow.
+
+         What we need is a way to tell React not to recalculate certain values when unnecessary ; especially the ones which take a long time to
+         compute. 
+
+         In our example, we need to tell React not to calculate whether `counterOne` is odd or even when we are changing `counterTwo` values.
+
+
+This is where the `useMemo` hook comes into picture. `useMemo` is a hook that'll only recompute the cached value when one of the dependencies has been changed. 
+This optimisation heads to avoid expensive calculations on every render.
+
+The first argument to `useMemo` is the function whose return value needs to be cached.
+As a second parameter, we need to specify the depencencies. Our function depends on the value of counterOne i.e whenever counterOne changes, 
+we are telling React to recompute the value and not use the cached value.
+
+Also, in code change isEven() to isEven.  `isEven` is not going to be a function call because it now stores a value.
+
+
+
+DIFFERENCE BETWEEN USECALLBACK & USEMEMO 
+>> The difference is that `useCallback` caches the provided function instance itself whereas `useMemo` invokes the provided function & caches 
+   its result. 
+
+   If we need to cache a function                        ==> useCallback
+   If we need to cache the result of an invoked function ==> useMemo
+
+****************
+`useRef` Hook
+****************
+
+This hook makes it possible to access DOM nodes directly within functional components.
+
+Video - 72
+------------
+
+At 6:43 min, we receive the error `interval is not defined`. Rightly so, because the variable is scoped only to 
+the useEffect hook. So we can clear the interval within the effect Hook, but not from an event handler.
+This is where `useRef` can come to the rescue.
+
+Although `useRef` can hold a reference to a DOM node using the `ref` attribute. It can also be used to store any
+mutable value and what's great about useRef is that the value will persist through the re-renders while also not 
+causing any additional renders when its value changes.
+
+`useRef` can be used to create a generic container which can hold a mutable value similar to instance properties on 
+a class component. This generic container does not cause re-renders when the data it stores changes.
+
+At the same time, it also remembers the stored data even after other state variables caused a re-render of this 
+component. 
+
+A simple use case is clearing an interval timer from an event handler.
+
+Some hooks which are used rarely - useImperativeHandle, useLayoutEffect & useDebugValue.
+
+
+So far, we've had a look at several Hooks.
+== > useState, useEffect, useContext, useReducer, useCallBack, useMemo & useRef.
+
+These hooks are all provided by the react library and we've seen that these hooks are pretty much functions that can be invoked within our
+components. IT IS POSSIBLE to build our own Hooks by extracting component logic into re-usable functions. In simpler terms, it is possible 
+for anyone to create their own custom hook. 
+
+> A custom Hook is basically a JavaScript function whose name starts with "use". A custom hook can also call other hooks if required.
+
+Why would we want custom hooks ? 
+> To share logic between two or more components. Custom hooks is a simpler alternative to HOC & render props pattern.
+
+
+**** COMMON ERRORS ****
+Our state immediately changes when our component is rendered. 
+And we know that when the state changes, our component will be rendered again. So it can make an infinite loop.
+***********************
+
+What is an inline function ? 
+
+An inline function in JavaScript is a function defined within the scope of another function and created at runtime. 
+It allows for the definition of functions that can be used on-the-fly without the need for a separate function declaration.
+
+WHY USE ARROW FUNCTION with React event handler ?
+ => https://react.dev/learn/responding-to-events#adding-event-handlers
+ => https://blog.devgenius.io/why-it-is-necessary-to-use-arrow-functions-with-react-event-handler-e0b278710310
+ => https://teamtreehouse.com/community/why-must-we-use-an-arrow-function-for-onclick
+ => https://www.reddit.com/r/reactjs/comments/cy389t/help_me_understand_when_to_use_arrow_functions_in/
+ 
+ ******************************************************************************************************************************************************
+
+Video - 94
+-----------
+
+To learn about TypeScript with React, we first need a react app that is configured specifically for TypeScript.
+`create-react-app` provides a TypeScript template that we can use.
+
+Command => npm create-react-app react-typescript-demo --template typescript
+
+Here, react-typescript-demo is our project name & we specify we want typescript to be configured by using the template option.
+
+Once the command is successfully executed, we can see the project structure,
+> We see an index.tsx file and an app.tsx file. Index.tsx is the entry point to our React app where we mount the app 
+  component onto the root DOM node.
+
+> And the App.tsx contains our app component which is the root component.
+> Components are defined in a `.tsx` file and not in a `.js` or `.jsx` file.
+
+Video - 95 
+-----------
+
+> A look at few basic prop types we're likely to use when creating a component with TypeScript.
+
+Video - 96
+-----------
+
+> Typing an object prop & an array.
+  For object prop ==> Person.tsx
+  For array ==> PersonList.tsx
+
+
+Video - 97
+-----------
+
+Currently, we've type defined as following --> 
+
+type StatusProps = {
+    status: string
+}
+
+From 2:25 (File --> Status.tsx), We've a problem. 
+
+Our message can handle only a status of loading, success or error. The status type though is any string.
+So, we could pass in a completely random string & TypeScript doesn't flag it as an error. 
+
+To fix this, we can use a union of string literals as the status type. We can change the code as below, 
+
+type StatusProps = {
+    status: 'loading' | 'success' | 'error'
+}
+
+For our next type, let's take a look at the children props which can be passed to a React component.
+(File --> Heading.tsx)
+
+Another variant of children props is when the child is another React component. (File -> Oscar.tsx)
+
+At 5:54, we see the error that we haven't defined the type. But, the question is what is the type of a React component ?
+> There are a few types that we can specify, but the safest bet is `React.ReactNode` which is a type provided by React
+  types package.
+
+  type OscarProps = {
+    children: React.ReactNode
+}
+
+> Passing React components as children props is pretty common. Remember `React Node` type from the React types package.
+
+> At 7:18 --> The last type is optional type. Sometimes it might so happen that a component prop doesn't have to be
+  passed. (Revisit the Greet component)
+
+  The way we inform TypeScript that message count prop is optional is by including a question mark at the end of the prop 
+  name where we define the type.
+
+  Like this,
+
+  type GreetProps = {
+    name: string
+    messageCount?: number
+    isLoggedIn: boolean
+  }
+
+ If we wish to go a step further, we can destructure message count from props and assign a default value of zero.
+ > const {messageCount = 0} = props
+
+ What we're saying is if messageCount is passed in, use that value. If not, use `0` as it's value.
+ This is how we specify optional props for a component with TypeScript.
+
+ Summary :- 
+ : We covered some common advanced types we'll need when defining props for a component :- Union of string literals, 
+   children prop & children prop where the type is React.ReactNode and finally optional props.
+
+
+Video - 98 - Event Props
+-------------------------
+
+0:44 min => What we want here is for the button component to accept a click event as a prop and pass it on to the HTML
+            button element. Most of the time a click handler does not need any parameter and doesn't return anything.
+            
+            For example, it can make an API call in the function body but doesn't have to accept a parameter or return a 
+            value. For such cases, we can type the event as () => void (i.e an arrow function that doesn't return anything,
+            so VOID)
+
+2:16 min => Another variant of this click handler is when we need the event passed in to our click handler. Like this, (event) => 
+            But again, what exactly is the type of this click event. For that, we rely on a React type. The type of this event is 
+            React.MouseEvent . As below, 
+
+            type ButtonProps = {
+              handleClick: (event: React.MouseEvent) => void
+            }
+            
+            We can also be more specific by saying this is a button click by adding <HTMLButtonElement>
+            Like this, 
+
+            type ButtonProps = {
+              handleClick: (event: React.MouseEvent<HTMLButtonElement>) => void
+            }
+
+            We don't have to import `HTMLButtonElement` as it is readily available in our TypeScript environment.
+
+Till 4:17 mins ==> This is pretty much about typing a click event as a component prop.
+
+At 4:34 ==> Typically with input elements, the component would need two props :- the input value and the onChange handler.
+            
+At 6:24 ==> What we've seen here till now is the `handleChange` event being passed in as a prop. However, we also have an alternative 
+            of defining the handler within the component as well.
+
+
+Video - 99 - Styles as Props
+------------------------------
+
+At 0:39 mins ==> What we want now is for the style to be passed in as props rather than hardcode within the component.
+
+Some Tips related to props & types in React :- 
+
+1) We can destructure props when defining the component.
+2) Type(s) can be written in separate file (example - Person.types.ts ) and can be imported and used wherever required.
+   It'd would make sense to use this when we have a lot more types within a component and to make our codebase look clean,
+   we can use this. With this approach, we can export & import types just like components.
+
+   File - Person.types.ts
+   -----------------------
+
+   export type PersonProps = {
+     name: {
+        first: string
+        last: string
+     }
+   }
+
+
+3) Reusing Types --> It is possible to extract a type and use it in multiple places. For example, in file `Person.types.ts`,
+                     we can extract the `name` object into a separate type. Example shown below,
+
+                     export type Name = {
+                      first: string
+                      last: string
+                    }
+
+
+                     export type PersonProps = {
+                      name: Name
+                    }
+
+                    As seen above, within Person props, name is of type `Name`. Now that we've a `Name` type, we can also use it 
+                    in other places. For ex, let's import it in `PersonList.tsx` . This method of creating a basic type and using
+                    it in multiple places is a good thing. This approach ensures reusability and avoid duplication.
+
+
+
+Video - 101 - useState Hook with TypeScript
+--------------------------------------------
+> We initialized useState with a simple Boolean value and allowed TypeScript to infer the types for the state variable as well as 
+  the setter function.
+
+> TypeScript has inferred the type of `isLoggedIn` to be Boolean because of the initial value that we've specified.
+
+
+Video - 102 - Typing the useState Hook when the initial value is only known at a future point in time
+------------------------------------------------------------------------------------------------------
+> Here, we've learnt how to type the useState hook when the initial value type is different to the future 
+  value type. We specified that the state type can be null or AuthUser.
+
+  Like this, 
+
+  const [user, setUser] = useState<AuthUser | null>(null)
+
+  Here, we are informing TypeScript that user can either be null or AuthUser.
+
+
+Video - 106 :- 
+-----------------
+
+> What we've done is use the theme value as a context (i.e content defined in `theme.ts`), and set the styles for the 
+  div tag defined in Box.tsx file. 
+
+NOTE - A context always has to be created outside the component whereas its future value will always be set inside a
+       component.
+
+
+Video - 107 :-
+-----------------
+
+> From 10:10 min ==> At the moment, we can see that we've to check if user context exists every time we need to use its
+  value(i.e We've `if userContext` written in event handlers) and optional chaining with userContext. This is because we 
+  specify `null` as the initial value. What we can do instead is use type assertion again.
+
+
+REMEMBER 3 simple steps when it comes to Context API in React :- 
+1) Create a context. 
+2) Use that context from the component that needs the data. (i.e consume the context)
+3) Provide that context from the component that specifies the data. (i.e the Context Provider)
+
+
+Video 108 - useRef hook
+-------------------------
+
+> When it comes to useRef, there are primarily two scenarios :- 
+  1) As a read-only ref for a DOM element. (File --> src/components/ref/DomRef.tsx)
+  2) As a mutable value which can behave like an instance variable. (File --> src/components/ref/MutableRef.tsx)
+
+DomRef.tsx ==> This file contains a component where we use the `useRef` hook to focus an input element when the component 
+               mounts.
+
+
+Video - 110 :- How to pass a component as a prop with React & TypeScript
+------------------------------------------------------------------------
+
+> At 3:53 mins ==> It doesn't know the <Component> can accept the name prop. To fix this, in `PrivateProps` object,
+  after the `Component: React.ComponentType`, specify the profileprops. 
+
+  Like this => `Component: React.ComponentType<ProfileProps>`
+
+  If we've to pass in a component prop, use `React.ComponentType`. If that component itself accepts props, specify the 
+  prop type in angled brackets (as shown at line no 422 above => Look in the file /components/auth/Private.tsx for reference)
+
+
+  Video - 111 :- TypeScript Generics
+  ------------------------------------
+
+  > At 1:39 min, in App.tsx => We've invoked the List component. Items array is an array of three strings. And `onClick`
+    prop is a simple function which logs the clicked item to the console.
+
+    When we specify items as an array of numbers, we've make changes as `| number` in the Types as well.
+    Now after some time, we see items as an array of objects where each object contains a first name and a last name.
+    
+    TypeScript will throw an error. So, what we need is a way to tell TypeScript that the type of items and the onClick 
+    handler item can vary. And, GENERICS are the way to do that.
+
+    We've already looked & used generics before
+     - When we specified the type to useState => (components/state/User.tsx)
+     - When we specified the React.ComponentType in Private Props (components/auth/Private.tsx)
+
+    > For this example (src/components/generics/List.tsx), add a generic type to the list props type. We can think of generic type as parameterized types.
+       Like this ==> type ListProps<T>
+
+       <T> is sort of a convention and stands for type. But you are welcome to use any label you want to use.
+       We assign the same to items (items: T[]) => read as Array of type T. Same for the onClick prop.
+
+      If we want to add restrictions to what the generic type can be, we can focus on the constraint we've specified ==> <T extends {}>
+      If we want only an array of numbers or strings, we specify <T extends string | number>
+
+      Another useful constraint is mentioning that each object must contain an `ID` property => <T extends {id: number}>
+
+
+GENERICS is really powerful and is something we're going to come across when working with React & TypeScript. It helps us avoid code duplication when we need 
+multiple types to be handled but at the same time, provide strict type checking.
+
+
+Video - 112 :- Restricting PROPS that can be passed to a component
+--------------------------------------------------------------------
+
+Look at ' /components/restriction/RandomNumber.tsx' folder.
+
+At 1:48 mins, There is room for improvement.
+
+At the moment, it is quite possible for the user to even set `isNegative` & `isZero` to True. This is not how we intend the component to be used.
+What we've to do is restrict the props. If `isPositive` is passed in, `isNegative` & 'isZero' should be disallowed. Similar restrictions with the 
+other two props set to `True`.
+
+We begin by creating separate types for positive, negative & zero. We can create a `RandomNumber` type and extend it.
+
+At 3:43 mins, now we can specify our restrictions. For that, Typescript provides a `never` type.
+
+
+Video - 113 :- Template literals & exclude
+--------------------------------------------
+
+> File :- /src / components / templateliterals / Toast.tsx
+
+In this scenario, it is a simple component that accepts one prop called `position` and renders it in the browser.
+
+JFI --> If we look at a library like React-HotToast for example, a toast notification can pop-up in various positions 
+        on the screen. (Possible positions Written as comment in file Toast.tsx)
+
+   > That is what we want to restrict our position prop value to as well.
+
+
+Video - 114 :- Wrapping HTML Elements
+---------------------------------------
+
+> File(s) :- /src/components/html/Button.tsx & /src/components/html/Input.tsx
+  -----------------------------------------------------------------------------
+
+  We need to specify button props to include the HTML button props in addition to our special prop.
+
+
+Video - 115 :- Extracting a Component's Prop Types
+-----------------------------------------------------
+
+Here, we'll be able to extract the prop types from one component and use them as prop types for another component.
+
+Refer File --> CustomComponent.tsx (We extract props from the `Greet` component to the `CustomComponent`)
+
+
+Video - 116 :- Polymorphic components with React & TypeScript
+---------------------------------------------------------------
+
+---------------------------------------------------------------------------
+
+
+
+******************************************** REACT ROUTER ********************************************
+
+> It is a fully-featured client and server-side routing library for React. The library helps create and navigate 
+  between different URL's that make up our web application.
+
+> It also provides unique URLs for different components in the app and makes the UI easily shareable with other
+  users.
+
+  React Router PlayList --> https://www.youtube.com/watch?v=UWYOC8g5N_0&list=PLC3y8-rFHvwjkxt8TOteFdT_YmzwpBlrG
+
+
+Video - 3 :- Configuring Routes 
+*********************************
+
+> The first step to configuring routes with React-Router is to connect the URL in the browser with our React Application.
+  
+  For that, React-Router provides a component called Browser router with which we need to wrap our entire app. 
+  (These changes should be done in `index.js`)
+
+  What this allows us to do is use all the features from react-router within the app component tree.
+
+  At 3:08 min => For the route configuration, we need two components from React Router => Routes & Route
+
+
+Video - 4 :- Links 
+********************
+
+> From 1:01 min, within the <nav> tag, we need two clickable elements to navigate between the routes.
+  To navigate to another route, `react-router` provides us with the Link component.
+
+  The <Link> component renders an anchor element in the DOM. So, we can specify text similar to the anchor text.
+  
+  But, instead of the `href` attribute, we specify the `to` prop. To this prop, we assign the path of the
+  configured route.
+
+
+Video - 5 :- Styling the Active Links 
+***************************************
+
+> Till now, we've added two links to navigate back & forth between the home page & the about page.
+  However, both these links appear the same irrespective of which route we are currently viewing.
+
+> In practical web applications, it is common to style the link corresponding to the active route in a different  
+  way. This also benefits the user from a user experience point of view.
+
+> React-Router provides another component called `NavLink` which knows whether or not it is the active link.
+  We can use that component to style the active link in our Nav bar.
+
+> What's special about this `NavLink` component is that by default it receives an `active` class when the link is the
+  current route. (CHECK THIS BY INSPECTING THE ELEMENT, if we redirect from one route to another, the corresponding anchor 
+  tag gets the active class attached to it).
+
+> From 2:25 min => Offcourse, we won't be using plain CSS to style our React App. We must be using a CSS in JS solution.
+  
+  WE CAN MAKE USE OF THE ACTIVE LINK WITH THE STYLE PROP. We can use style prop on the two `NavLinks` we have and set it's 
+  value to a function. (in our case, `navLinkStyles`)
+
+  SEE THE CODE OF THE FUNCTION `navLinkStyles` 
+   > It is an arrow function. But it just so happens :- `NavLink` component will set a property called `isActive` which can
+     be destructured from the arrow function's parameter.
+    
+  Therefore to set a style on the active link, make use of the `NavLink` component.
+
+
+WE MIGHT HAVE A QUESTION ==> Why would we use the LINK component that we had seen earlier instead of the NavLink Component ?
+> The `NavLink` component is specifically meant for building components like a NavBar or breadcrumbs or a set of tabs where 
+  we'd like to highlight the current selected item and provide useful context with screen readers.
+
+> If we want to navigate to routes from other parts of the app, Link should be the component to use as we wouldn't want the
+  active class being applied when it is not needed.
+
+
+Video - 6 :- Navigating Programmatically
+******************************************
+
+> Till now, we've learnt how to navigate to different routes using the <Link> & <NavLink> components. For the most, it is pretty 
+  much all that we need.
+
+> However at times, we might need to programmatically navigate to a particular route. For Ex - We're placing an order on Amazon.
+  If the form submission is successful, we'd be navigated to Order Confirmation page.
+
+> IN THIS VIDEO, we'll be implementing a button click handler where we programmatically navigate to a different route in our application.
+
+> From 2:54 mins :- What we want to do is on click of the button, navigate to the order summary page. To navigate programmatically, 
+  React-Router-DOM provides the `useNavigate` Hook. This hook returns a function.
+
+> Also, implementing a back button programmatically is also done with the `useNavigate` hook.
+
+To summarize, React Router provides the `useNavigate` hook to navigate programmatically. Call the hook within the component and use the 
+returned function to navigate passing in either a path (i.e 'order-summary') or a number (i.e (-1) in our example) that indicates a change
+in the history stack.
+
+If you want to replace the history, pass in the optional second argument with replace set to `true`.
+
+Some info about the Stack Data Structure :- 
+
+> Initially the stack is empty and value of top is -1. 
+> When an element is inserted the value of top will be incremented by 1 and the element would be inserted at the array index specified by the top variable. 
+> Same process is followed when more elements are inserted into stack until the stack is completely full.
+
+Refer here to understand about STACK data structure --> https://www.techgig.com/practice/data-structure/stacks/tutorial#:~:text=Initially%20the%20stack%20is%20empty,the%20stack%20is%20completely%20full 
+
+More info on the useNavigate replace:true ==> https://reactrouter.com/en/main/hooks/use-navigate
+
+Earlier, there was a hook called "useHistory" which was used to move to the previous page. It is depricated now and instead of that, we use `useNavigate`.
+
+
+Video - 7 :- Configuring a no-match route in our React Application
+*********************************************************************
+
+> We'll create a default component that should be rendered for URL's that don't match any of the configured routes.
+
+<Route path='*' /> --> This has a special meaning in React Router. This Route will match only when no other routes do.
+
+
+Video - 8 :- Configuring nested Routes
+*****************************************
+
+> From 7:21 mins,
+
+  We've now configured routes to render the child component within the parent component i.e `FeaturedProducts` or `NewProducts` 
+  within the `Products` component.
+
+  However, the products page still doesn't know where to render the child component. For that, React-Router provides an `Outlet`
+  component. The `Outlet` component renders the component corresponding to the matching child route from the parent list of routes.
+  
+  We've to invoke the `Outlet` component inside the Product component code. (i.e in Products.js)
+
+
+Possible Usecase :- To have a common layout for a feature in our application. The parent route will render the layout component and
+                    within the layout component, use the `Outlet` component to render different child components.
+
+
+
+Video - 8 :- Index Route
+***************************
+
+> When you have nested routes and amonst those nested routes, we want a route to be rendered at the parent URL, make use of an Index 
+  Route. The index route will contain the `index` prop instead of the `path` prop.
+
+                                  ***************** DJANGO-REACT NOTES APP ******************
+
+Read about Axios interceptors here --> https://www.npmjs.com/package/axios#axios-api

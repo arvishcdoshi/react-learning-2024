@@ -1,0 +1,623 @@
+What is Next.js ?
+> It is a React Framework for building web applications.
+
+When building applications with React alone, it's not feasible to create a fully featured application 
+ready for production. 
+
+React is a library for building User interfaces (UI), responsible only for the view layer of an application.
+As a developer, we need to make decisions about other features such as routing, data fetching and more.
+
+Next.Js on the other hand is a React Framework. It uses React for building user interfaces but also provides
+additional features that enable you to build production-ready applications.
+
+These features include routing, optimized rendering, data fetching, bundling, compiling and more. We don't need 
+to install additional packages as Next.js provides everything we need.
+
+However, NextJs being a framework has opinions and conventions that should be followed to implement these features.
+
+
+To create a new NextJS project, we need to run the following command :- 
+  - npx create-next-app@latest
+
+The `.next` folder --> This folder is generated when we run either the dev or build scripts. (i.e for example - npm run dev)
+It is from this folder that our NextJS application is served.
+
+The `node_modules` folder --> This is where all the dependencies of our project are installed.
+
+The `public` folder --> This folder holds all the static assets to be served such as images and SVG's.
+
+Inside the `src` folder, we've one folder called app which is the newly introduced app router.
+
+There are some scripts present in the `package.json` :- 
+ 
+ {
+    "scripts": {
+       "dev": "next dev",
+       "build": "next build",
+       "start": "next start",
+       "lint": "next lint" 
+    }
+ }
+
+ These scripts refer to the different stages of developing an application :-
+  - dev: runs `next dev` to start Next.js in development mode.
+  - build: runs `next build` to build the application for production usage.
+  - start: runs `next start` to start a Next.js production server.
+  - lint: runs `next lint` to set up Next.js' built-in ESLint configuration.
+
+
+In the context of `Hello-World` project, 
+> When we run the command `npm run dev`, the execution is transferred to `layout.tsx`, 
+  The `RootLayout` Component is rendered.
+
+> When we navigate to localhost:3000, the children prop will always refer to the component defined in `page.tsx` 
+  in the `app` folder. That component is the `Home` component which is then rendered in the browser.
+
+  React Server Components is a new architecture introduced by the React team in version 18.
+  The architecture introduces a new way of creating React Components - splitting them into two types :-
+   - Server Components & Client Components
+
+> Server Components :- 
+ - In Next.js, all components are Server components by default. They have the ability to run tasks like reading files or
+   fetching data from a database. 
+ - However, they don't have the ability to use Hooks or handle user interactions.
+
+> Client Compontoents :-
+
+ - To create a Client component, it's necessary to add "use client" at the top of the component file. Client components are the
+   traditional React components.
+
+NextJS has a file-system based routing mechanism where the URL paths accessible in the browser are defined by files & folders within 
+our codebase.
+
+Some points to note :- 
+ - The `page.tsx` file within the app folder corresponds to the domain root and page.tsx files within the subfolders are associated
+   with routes based on their folder names such as `about` and `profile` .
+
+Routing Conventions :-
+ - All routes must be placed inside the app folder.
+ - Every file that corresponds to a route must be named page.js or page.tsx 
+ - Every folder corresponds to a path segment in the browser URL.
+
+ When these conventions are followed, the file automatically becomes available as a route.
+
+ By creating a nested folder structure, files will automatically be routed in the same way within the URL. ( Refer to `blog` folder within the `NextJS/hello-world` project.)
+
+ While this approach works for now, it's not always feasible to define routes using pre-defined paths espesically for 
+ complex applications. We need dynamic routes in that case.
+
+ In NextJS, we can enclose a folder name with brackets to create a dynamic route. (See `products` folder in NextJS/hello-world project)
+ NextJS treats square brackets in a folder name as a dynamic segment enabling us to create dynamic routes.
+
+NOTE :-  Every page in the app router receives route parameters as a prop.
+
+When building complex application, it is common to encounter scenarios where multiple dynamic route segments are required.
+For ex - /products/1 - is handled with dynamic routes.
+But for handling - /products/1/reviews/1 - we need nested dynamic routes.
+
+When dealing with multiple path segments, the solution lies in a nested folder structure.
+It is possible to create nested dynamic routes by having dynamic segments in the folder names. (See `products` and `reviews` folder structures inside the `NextJS/hello-world` project)
+
+`Catch all segments` route captures all URL segments and maps them to a single file in our project (i.e the `page.tsx` file in our `app/docs/[...slug]` folder)
+
+This is particularly useful for documentation where we want different segments for better organisation & SEO, but the layout of the document remains the same. We define it once, but render it
+for multiple variations of the URL.
+
+NextJS Tutorial - 9 - From 6:50 mins,  (If we simply go to /docs, we get a 404. (which is taken care of by NextJS) )
+
+However, if we wish to display the `<h1>Docs home page</h1>` in case of no slug, we've to make use of optional catchall segments.
+All we've to do is wrap the square brackets with another pair of square brackets. ( i.e [[...slug]] in place of [..slug] )
+
+Although NextJS provides routing conventions to follow, it remains flexible regarding how we structure our project files & folders.
+
+FILE COLOCATION 
+ - We already know that NextJS uses a file system based router where each folder represents a route segment mapped to a corresponding segment in the URL path.
+   It's important to note that a route isn't publicly accessible until a `page.js` or `page.tsx` is added to the respective route segment.
+ 
+ - Even when a route becomes publicly accessible, only the content returned by `page.tsx` is sent to the client. The content returned must be a 
+   default exported React Component.
+
+
+Private Folders :- 
+
+ - A private folder indicates that it is a private implementation detail and should not be considered by the routing system.
+ - This means that the folder & all its sub-folders are excluded from routing.
+
+ - A private folder should be prefixed by an underscore. Within that folder, we can have utility functions.
+
+ - Private folders can be helpful in few different scenarios : 
+   : For separating UI logic from routing logic.
+   : For consistently organizing internal files across a project.
+   : For sorting and grouping files in code editors.
+   : For avoiding potential naming conflicts with future NextJS file conventions.
+
+ See _lib (It is a private folder, the component in it won't be rendered)
+ 
+ On a side note, if you want to include an underscore in URL segments, we can prefix the folder name with "%5F" :- which is the URL-encoded form of an underscore.
+ However, if you keep the encoded URL segment, it will be served. (for `_`, we can write `%5F`)
+
+ Route Groups :- 
+ - There's another feature that NextJS offers to help us organize our projects namely `Route Groups` .
+ - This feature allows us to logically group our routes & project files without affecting the URL path structure.
+
+ It is essential to organize routes & project files into groups based on sections or intent.
+ - See `auth` folder in `hello-world` project (inside `src/app`). It is an example of Route group.
+ - We can mark a folder as a route group to exclude it from the routes URL path.
+   (example - earlier we had to write /auth/login. But after making `auth` as the route group by wrapping folder's name in parenthesis, we can simply write /login, /register and /forgot-password etc.)
+
+ - Therefore, (auth) serves as a folder to help organize our code. However, we can have multiple levels of nested route groups if needed.
+
+
+LAYOUTS :-
+-----------
+
+A page is UI that is unique to a route. A layout is UI that is shared between multiple pages in the app.
+
+When building apps, it is common to have a consistent layout across different pages such as a header at the top and a footer at the bottom.
+With the introduction of the layouts, achieving this becomes much easier in NextJS.
+
+In nutshell, Layouts are UI components shared between multiple pages in an application.
+And each app has a mandatory root layout which is the topmost layout.
+
+
+How do we create Layouts ?
+---------------------------
+
+You can define a layout by default exporting a React component from a `layout.js` or `layout.tsx` file.
+That component should accept a children prop that'll be populated with a child page during rendering.
+
+The file `Layout.tsx` in the app folder (i.e in the `hello-world` project) serves as the topmost layout and is referred to as the 
+root layout. The root layout is a mandatory layout for every NextJS application.
+
+Every Layout component should accept a children prop that'll be replaced by a child component during rendering.
+In `hello-world` project, the `page.tsx` in the app folder will replace the children prop when the layout is rendered in the browser.
+The children prop here represents our `Home` component defined in `page.tsx` file.
+
+Hence by defining a single `layout.tsx` file in the app folder, we can create a consistent layout for every page in our application.
+ - For `localhost:3000`, the JSX for `page.tsx` within the app folder gets rendered.
+ - When we do `localhost:3000/about`, the JSX for page.tsx in the about folder gets rendered.
+ - Similarly, when we do `localhost:3000/profile`, the JSX for page.tsx in the profile folder gets rendered.
+
+The Layout component renders the children prop for `page.tsx` to render a unique UI corresponding to the route.
+
+It's important to note that Layouts can be nested. This approach of nested layouts allows us to create layouts that apply only to specific areas 
+of our application. 
+
+----------------------------------------------------------------------------------------------
+**** IMP - Look at NextJS series Video 15 from 2:50 min to visualize nested layouts. ****
+----------------------------------------------------------------------------------------------
+
+Another Importance of a Route Group - Selectively apply a layout to certain segments while leaving others unchanged.
+Route groups allow us to opt specific segments into a layout without altering the URL.
+
+We've implemented the same - See `products` folders in the hello-world project -  we've `with-auth-layout` folder.
+
+The routes outside of the group (i.e forgot-password) do not share the layout. Only `login` & `register` within the `with-auth-layout`
+route group share this layout.
+
+This is particularly useful in large projects with numerous layouts and route segments ensuring a tidy & organized project structure.
+
+When it comes to building web applications, ensuring proper search engine optimization is crucial for increasing visibility and attracting users.
+
+NextJS introduced the `Metadata API` which allows you to define metadata for each page ensuring accurate & relevant information is displayed when your pages are 
+shared or indexed.
+
+With the new App router, there are two methods to configure metadata in a `layout.tsx` OR a `page.tsx` file.
+ 1) Either export a static metadata object.
+                   OR 
+ 2) Export a dynamic generateMetadata function.
+
+Both `Layout` & `Page` can have metadata, but Page metadata takes precedence if both are present.
+
+To enable client-side navigation, NextJS provides us with the `Link` component.
+
+The `<Link>` component is a React component that extends the HTML `<a>` element, and it's the primary
+way to navigate between routes in NextJS. To use it, we need to import it from "next/link".
+
+In the <Link> component, `replace` prop replaces the current history state instead of adding a new URL to the stack.
+
+************************************************************************
+To determine if a link is active, NextJS provides `usePathname` hook.
+************************************************************************
+
+*******  Video 20 from 4:20 mins --> We won't see any changes reflecting for CSS if we do not have global CSS file deleted. As workaround, we'll have to create a styles.css file inside the (auth) folder. ***********
+
+Read more over here --> https://nextjs.org/docs/pages/building-your-application/styling#adding-a-global-stylesheet
+
+
+NextJS Tutorial NO 22 - Templates
+-----------------------------------
+
+From 2:08 mins, we've entered a value for the input element at the path /register.
+
+Now when we navigate to `/login`, the input value remains as it is. 
+Therefore, we can see that the state is preserved.
+
+This is because Layouts only mount the part representing the content of the newly loaded page, but keep all the common elements untouched.
+Layouts don't remount shared components resulting in better performance.
+
+A majority of the time this is the behaviour we need. However, we might come across a scenario where we need the layouts to create a new instance
+for each of their children on navigation. Example scenarios include `enter/exit animations` for Pages or running a side effect using the `useEffect` hook when the route changes.
+
+For such situations, we can use the template file as replacement of the layout file. TEMPLATES are similar to layouts in that they wrap each child layout or page.
+
+But, with templates, when a user navigates between routes that share a template, a new instance of the component is mounted, DOM elements are recreated, state is not preserved & effects 
+are re-synchronized.
+
+A template can be defined by exporting a default React component from a template.js or template.tsx file.
+Similar to layouts, templates should also accept a children prop which will render the nested segments in the route.
+
+So far, we've come across several special files --> page.tsx, layout.tsx, template.tsx, not-found.tsx 
+Now, there's 1 more file called `loading.tsx`.
+
+`loading.tsx` - This file allows us to create loading states that are displayed to users while a specific route segment's content is loading.
+                The loading state appears immediately upon navigation, giving users the assurance that the application is responsive and actively loading content.
+
+There's another vital part of our application namely error handling through a special file named `error.tsx`.
+
+The component defined in `error.tsx` can also receive the error object as a prop to display more information.
+
+Here's what `error.tsx` file does in the App router:- 
+ - Automatically wrap a route segment and its nested children in a React error boundary
+ - Create error UI tailored to specific segments using the file-system hierarchy to adjust granularity.
+ - Isolate errors to affected segments while keeping the rest of the application functional.
+ - Add functionality to attempt to recover from an error without a full page reload.
+
+
+Tutorial 26 - Handling Errors in Nested Routes :-
+----------------------------------------------------
+
+From 1:20 min => When we hit `http://localhost:3000/products/1/reviews/1`,
+
+The entire products route is replaced by the UI from the `error.tsx` file. The error from `page.tsx` in the [reviewId] folder bubbles to the nearest error 
+boundary which is now defined in the `error.tsx` file in the `products` folder. Deeper the placement of `error.tsx`, more granular is error handling.
+
+Usually, an `error.tsx` file will handle errors for all its nested child segments.
+
+Let's say we have a component hierarchy as follows :- 
+
+  <Layout>
+    <Template>
+     <ErrorBoundary fallback={ <Error /> }>
+      <Suspense fallback={ <Loading /> }>
+        <ErrorBoundary fallback={ <NotFound /> }>
+           <Page />
+        </ErrorBoundary>
+      </Suspense>
+     </ErrorBoundary> 
+    </Template>
+  </Layout>
+
+Here, the error boundary does not catch errors thrown here because it's nested inside layout's component.
+
+
+NextJS Video 27 (Handling errors in Layout) :-
+------------------------------------------------
+
+From 1:55 min, remember the error boundary will not handle errors thrown in a `layout.tsx` component within the same segment.
+To navigate around this, we will need to place the `error.tsx` file in the layout's parent segment.
+SO, we'll move `error.tsx` from `productId` folder into the products folder.
+
+
+Now when we encounter the error on reloading the page, we observe that our app remains intact and the error boundary JSX renders in place of 
+the products route. The header, footer and any other UI elements if present higher up in the tree are unaffected.
+
+The placement of the `error.tsx` file plays a pivotal role in managing errors efficiently across different segments of our application.
+
+Parallel Routes :- 
+--------------------
+
+Parallel routes are an advanced routing mechanism that allows for the simultaneous rendering of multiple pages within the same layout.
+
+Parallel routes in Next.js are defined using a feature known as slots. Slots help structure our content in a modular fashion.
+To define a slot, we use the `@folder` naming convention. Each slot is automatically then passed as a prop to its corresponding `layout.tsx` file component which 
+we can then use to structure the dashboard page.
+
+A clear benefits of parallel routes is their ability to split a single layout into various slots, making the code more manageable.
+
+The true benefit of parallel routes lies in their capacity for independent route handling & sub-navigation.
+
+Independent Route handling - One of the most compelling features. This means that each slot of our layout, such as user analytics or revenue metrics, can have its own 
+loading and error states.
+ > This granular control is particularly beneficial in scenarios where different sections of the page load at varying speeds or encounter unique errors.
+ > For instance, if the user analytics data takes longer to load, we can display a loading spinner specifically for that section while other parts of the dashboard 
+   remain interactive.
+
+Sub-Navigation in routes - Offers a seamless subnavigation experience within each parallel route.
+
+ > Each slot of our dashboard can essentially function as a mini-application, complete with its own navigation and state management.
+ > This is espesically useful in a complex application such as our dashboard where different sections serve different purposes. 
+
+ To summarize, Parallel Routes allow simultaneous rendering of different pages within the same layout. They are defined using slots. Slots organize content in a 
+ modular fashion making code more manageable. They not only simplify code management but also enhance user experience with independent route handling & sub-navigation.
+
+ Unmatched Routes :- 
+ ---------------------
+
+ Navigating from the UI - In the case of navigation within the UI, NextJS retains the previously active state of a slot regardless of changes in the URL.
+
+ In NextJS Tutorial - Video 29, From 3:40 mins --> ,
+ >  That means, when we navigate between `default notifications` (at /complex-dashboard) and archived notifications (at /complex-dashboard/archived) within the notification slot, 
+    the other slots namely children, users & revenue remain unaffected.
+
+ > These slots continue to display whatever content they were showing before and are not influenced by the shift in the URL path from `/complex-dashboard` to `/complex-dashboard/archived` or the reverse.
+
+ > IN THE CASE OF A PAGE RELOAD, NextJS immediately searches for a `default.tsx` file within each unmatched slot.
+ > The presence of this file is critical, as it provides the default content that Next.js will render in the user interface.
+
+ > If this `default.tsx` file is missing in any of the unmatched slots for the current route, NextJS will render a 404 error.
+   Without the `default.tsx` file, NextJS cannot determine the default content for these slots on the initial load.
+
+
+DEFAULT.TSX file :- 
+ - The `default.tsx` file in Next.js serves as a fallback to render content when the framework cannot retrieve a slot's active state from the current URL.
+ 
+
+Intercepting Routes :-
+------------------------
+
+Intercepting routes allow us to intercept or stop the default routing behaviour to present an alternate view or component when navigating through the UI, while still 
+preserving the intended route for scenarios like page reloads.
+
+This can be useful if we want to show a route while keeping the context of the current page.
+
+For instance, consider the scenario with the navigation bar.
+> Clicking on a login link or a button normally takes you to a full login page. However, with intercepting routes we can configure the application to display a login modal instead, 
+  while the URL is still updated to reflect the `/login` route. This ensures the link remains sharable. If the page is reloaded or someone accesses the page using the shared link, the full 
+  login page is displayed as expected.
+
+Idea behind intercepting routes :- Display a different UI while in the context of the current page, but render the regular UI on page reload.
+
+To summarize, intercepting routes allow us to load a route from another part of our application within the current layout. This routing paradigm can be useful when we want to display the content
+of a route without the user switching to a different context.
+
+
+NOTE - `NextRequest` & `NextResponse` extends the standard request-response API.
+
+NextJS Tutorial 32 - Parallel Intercepting Routes :-
+-------------------------------------------------------
+
+> We've a photo feed & the details page. Further, we need to intercept the navigation from the feed to the details page.
+  Since we want a modal that'll render on top of the current feed, we need a paralle route first.
+
+
+With NextJS App router, we have the capability to handle more than just page routing. We can also create custom request handlers for our routes using feature called route handlers.
+
+Unlike page routes, which respond with HTML content, route handlers allow you to create RESTful endpoints, giving you full control over the response. We can perform CRUD operations with a DB.
+Route handlers are also great for making external API requests. They run server-side, ensuring that sensitive information like private keys remain secure & never gets shipped to the browser.
+
+
+Cookies in Route Handlers :- 
+------------------------------
+
+Cookies are small pieces of data that a server sends to a user's web browser. 
+The browser may store the cookie and send it back to the same server with later requests.
+
+Cookies are mainly used for three purposes :- 
+ - Session management like logins & shopping carts.
+ - Personalization like user preferences and themes.
+ - Tracking like recording and analyzing user behaviour.
+
+First approach to set and get cookies in a route handler :-
+ - Using the `Set-Cookie` header and the `request` object.
+
+Second option is to set & get cookies using the cookies function provided by NextJS.
+
+
+Caching in Route Handlers :-
+------------------------------
+
+Route handlers are cached by default when using GET method with the `Response` object in Next.js 
+
+
+Middleware :-
+---------------
+
+Middleware in Next.js is a powerful feature that offers a robust way to intercept and control the flow
+of requests & responses within your applications.
+
+It does this at a global level significantly enhancing features like redirection, URL rewrites, authentication, 
+headers & cookies management, and more.
+
+Middleware allows us to specify paths where it will be active :- 
+ : Custom Matcher config 
+ : Conditional statements
+
+
+Rendering :-
+--------------
+
+Rendering is the process that transforms the code we write into user interfaces.
+
+******************************************************************** IMP ******************************************************************************************************************************************************************** IMP ************************************************************************************************
+
+Rendering in React :- 
+-----------------------
+
+In a typical SPA, when a client makes a request, the server sends a single HTML page to the browser.
+This HTML page often contains just a simple <div> tag and a reference to a JavaScript file.
+
+If we look at the example HTML file from `create-react-app`, a tool used to scaffold react apps, we have an empty <div> tag and a reference
+to `bundle.js`. The `bundle.js` file contains everything our application needs to run including the react library itself & our application code.
+
+It is downloaded when the HTML file is parsed. The downloaded JS file then generates the HTML on our computer and inserts it into the DOM under
+the root <div> element and we see the UI in the browser. THIS PROCESS IS EVIDENT --> when we see the HTML appear in the DOM inspector (i.e elements tab in dev tools),
+but not when we click the `View Page Source` option WHICH SHOWS the HTML file sent by the server to the browser.
+
+This method of rendering where the component code is transformed into a user interface directly within the browser (the client), is known as client-side rendering (CSR).
+CSR became the standard for SPA's with widespread adoption.
+
+However, there were some inherent drawbacks to this approach.
+ * Generating HTML that mainly contains a single <div> tag is not optimal for SEO, as it provides little content for search engines to index.
+   Large bundle size and a waterfall of network requests for API responses from deeply nested components may result in meaningful content not being rendered 
+   fast enough for a crawler to index it. Search engines struggle to index the content properly.
+
+ * Having the browser (the client) handle all the work, such as fetching data, computing the UI, and making the HTML interactive, can slow things down. Users might see a
+   blank screen or a loading spinner while the page loads. This issue tends to worsen over time as each new feature added to the application increases the size of the JS
+   bundle prolonging the wait time for the users to see the UI. This delay is particularly noticeable for users with slow internet connections. This happens because the browser
+   has to download, parse, and execute JavaScript before the user sees any meaningful content on the page.
+
+Client Side Rendering(CSR) laid the groundwork for the interactive web applications we're used to today, but to enhance SEO & performance developers started looking for
+better solutions.
+
+To overcome this drawbacks of CSR, modern React frameworks like Gatsby & NextJS pivoted towards server side solutions. This approach fundamentally changes how content is delivered to the user.
+
+When the request comes in, instead of sending a nearly empty HTML file that depends on client side JavaScript to construct the page, the SERVER TAKES CHARGE of rendering the full HTML.
+This fully formed HTML document is then sent directly to the browser. Since the HTML is generated on the server, the browser is able to quickly parse and display it improving the initial page 
+load time.
+
+The server side approach effectively resolves the issues associated with client side rendering. First, it significantly improves SEO because the search engines can easily index the server-rendered 
+content. Also, the users can immediately see the page HTML content instead of a blank screen or a loading spinner. 
+
+HOWEVER, SSR's approach to immediately improving the visibility of content has its own complexity particularly when it comes to the page's interactivity. The full interactivity of the page is on hold until the JS bundle comprising 
+React itself along with your application specific code has been completely downloaded & executed by the browser. This phase is known as Hydration.
+
+In this phase, the static HTML page initially served by the server is brought to life.
+
+During Hydration, React takes control in the browser, reconstructing the component tree in memory based on the static HTML that was served. It carefully plans the placement of interactive elements within this tree. Then, React proceeds to bind
+the necessary JavaScript logic to these elements.
+
+This involves utilizing the application state, attaching event handlers for actions such as clicks & mouseovers, and setting up any other dynamic functionalities required for a fully interactive user experience.
+
+Diving deeper, server side solutions can be categorized into two strategies :- Static Side Generation (SSG) & Server-Side Rendering (SSR)
+ 
+  : SSG occurs at build time, when the application is deployed on the server. This results in pages that are already rendered and ready to serve. It is ideal for content that doesn't change often, like blog posts.
+  : SSR, on the other hand renders pages on-demand in response to user requests. It is suitable for personalized content like social media feeds, where the HTML depends on the logged-in user.
+
+Server-Side Rendering (SSR) was a significant improvement over Client-Side Rendering (CSR), providing faster initial page loads and better SEO.
+However, SSR too introduces it's own set of challenges.
+
+Drawbacks of SSR - all or nothing WATERFALL
+ : Data fetching must be completed before the server can begin rendering HTML.
+ : The JavaScript required for the components needs to be fully loaded on the client side before the hydration process can start.
+ : All components have to be hydrated before they become interactive.
+
+These issues contribute to an 'all-or-nothing' waterfall scenario, resulting in inefficiencies, espesically if certain parts of your application are 
+slower than others, as is often the case in real-world apps.
+
+To address these performance drawbacks of SSR, React 18 intoduced the Suspense SSR architecture.
+
+ This new architecture allows us to use the <Suspense> component to unlock two major SSR features :-
+   : HTML streaming on the server
+   : Selective Hydration on the client.
+
+ 
+ As we already know, in case of SSR, the server sends the complete HTML which is then sent to the client. The client displays this HTML and only after the
+ complete JavaScript bundle is loaded does React proceed to hydrate the entire application to add interactivity.
+
+ NextJS Tutorial Video 48 :- SUSPENSE FOR SSR 
+ ----------------------------------------------
+
+  : ONLY AFTER THE COMPLETE JAVASCRIPT BUNDLE IS LOADED, DOES REACT PROCEED TO HYDRATE THE ENTIRE APPLICATION TO ADD INTERACTIVITY.
+
+  : Here is a similar visualization from a user interface perspective.
+    : FIRST, we render all HTML. The client eventually receives it. Then we load all the code and hydrate the entire application.
+ 
+    : From 1:56 min => With React 18, we've a new possibility. By wrapping a part of the page such as the main content area within Suspense component, we instruct REACT it doesn't need
+    to wait for the main section data to be fetched to start streaming the HTML for the rest of the page. React will send a placeholder like a loading spinner instead of the complete
+    component.
+
+    : Once the server is ready with the data for the main section, React sends additional HTML through the ongoing stream accompanied by an inline script tag containing the minimal
+    JavaScript needed to correctly position that HTML. As a result of this, even before the full React library is loaded on the client side, the HTML for the main section becomes 
+    visible to the user.
+
+
+      THIS SOLVES OUR FIRST PROBLEM - `WE DON'T HAVE TO FETCH EVERYTHING BEFORE WE CAN SHOW ANYTHING`
+       : If a particular section delays the initial HTML, it can be seamlessly integrated into the stream later.
+       : This is the essence of how Suspense facilitates server-side HTML streaming.
+
+  : We can now speed up the initial HTML delivery, but we still have another challenge.
+      > Until the JavaScript for the main section is loaded, client-side app hydration cannot start.
+      > And if the JavaScript bundle for the main section is large, this could significantly delay the process.
+
+  : To mitigate this, code splitting can be used. Code Splitting allows us to mark specific code segments as not immediately necessary for loading, signalling your bundler to segregate them into
+    separate `<script>` tags. Using `React.lazy` for code splitting enables you to separate the main section's code from the primary JavaScript bundle.
+    
+    AS A RESULT, the JavaScript containing React and the code for the entire application, excluding the main section, can now be downloaded independently by the client, without having to wait for
+    the main section's code.
+
+    READ THIS TO KNOW MORE --> https://medium.com/@bhairabpatra.iitd/lazy-loading-in-react-b8f3babe640b#:~:text=Lazy%20loading%20in%20React%20allows%20you%20to%20split%20your%20code,loading%20time%20of%20your%20application.
+
+  : SELECTIVE HYDRATION ON THE CLIENT :-  The is crucial because by wrapping the main section within `<Suspense>`, we've indicated to React that it should not prevent the rest of the page from not just streaming, 
+    but also from hydrating.
+
+    This feature called `selective hydration` allows for the Hydration of sections as they become available, before the rest of the HTML & the JavaScript code are fully downloaded.
+    Thanks to Selective Hydration, a heavy piece of JS doesn't prevent the rest of the page from becoming interactive.
+
+    Moreover, selective hydration offers a solution to the third issue: the necessity to "hydrate everything to interact with anything" 
+
+    React begins hydrating as soon as possible, enabling interactions with elements like the header and side navigation without waiting for the main content to be hydrated. This process is managed automatically by React.
+    In scenarios where multiple components are awaiting hydration, React prioritizes hydration based on user interactions. For example, if the <SideNav> is about to be hydrated and we click on the <MainContent> area, React will 
+    synchronously hydrate the clicked component during the capture phase of the clicked event. This ensures the component is ready to respond immediately to user interactions. <SideNav> is hydrated later on.
+
+  : The three significant drawbacks of traditional SSR have all been addressed by the new Suspense SSR architecture.
+
+
+DESPITE THESE IMPROVEMENTS IN SSR, few challenges still remain. 
+ 1) Even though JavaScript code is streamed to the browser asynchronously, eventually, the entire code for a web page must be downloaded by the user.
+    As applications add more features, the amount of code users need to download also grows. This leads to an important question => SHOULD USERS REALLY HAVE TO DOWNLOAD SO MUCH DATA ?
+
+ 2) The current approach requires that all React components undergo hydration on the client-side, irrespective of their actual need for interactivity. This process can inefficiently spend
+    resources and extend the loading times and time to interactivity for users, as their devices need to process and render components that might not even require client-side interaction.
+    This leads to another question - should all components be hydrated, even those that don't need interactivity ?
+
+ 3) In spite of server's superior capacity for handling intensive processing tasks, the bulk of JavaScript execution still takes place on the user's device. This can slow down the performance,
+    espesically on devices that are not very powerful. This leads to another important question: should so much of the work be done on user's device ?
+
+
+ THESE ISSUES HIGHLIGHT THE NEED FOR A BETTER WAY TO BUILD FASTER APPLICATIONS THAT IMPROVE UPON TRADITIONAL RENDERING TECHNIQUES WHILE OVERCOMING THEIR LIMITATIONS.   
+ 
+ Suspense for SSR brought us closer to a seamless rendering experience. However, it still has it's own set of challenges.
+ 
+ 1) Increased bundle sizes leading to excessive downloads for users.
+ 2) Unnecessary hydration delaying interactivity.
+ 3) Excessive client-side processing that could result in poor performance.
+
+
+To address these challenges, we need a significant leap towards a more powerful solution and that brings us to 
+React Server Components (RSC)
+
+RSC represent a new architecture designed by the React team. This approach aims to leverage the strengths of both server & client 
+environments, optimizing for efficiency, load times, and interactivity. The architecture introduces a dual-component model differentiating 
+between Client Components & Server Components.
+
+This distinction is not based on the functionality of the components but rather on where they execute and the specific environments they are designed to 
+interact with.
+
+CLIENT COMPONENTS :- 
+----------------------
+
+ > They are typically rendered on the client-side (CSR) but, they can also be rendered to HTML once on the server (SSR) allowing users to immediately see the page's HTML 
+   content rather than a blank screen. The idea of client components rendering on the server might seem confusing, but it is helpful to view them as components that primarily 
+   run on the client, but can (and should) also be executed once on the server as an optimization strategy.
+ 
+ > Client Components have access to the client environment, such as the browser, allowing them to use state, effects, and event listeners to handle interactivity and also 
+   access browser-exclusive APIs like geolocation or localStorage, allowing you to build UI for specific use cases.
+
+
+SERVER COMPONENTS :-
+----------------------
+
+ > Server Components represent a new type of React component specifically designed to operate exclusively on the server. And unlike client components, their code stays on the
+   server and is never downloaded to the client. This design choice offers multiple benefits to React applications.
+
+   Some benefits of server components include - zero bundle size, access to server side resources, enhanced security, better SEO etc.
+
+   Reduced bundle size :- 
+    > Server components do not send code to the client, allowing large dependencies to remain server-side. This benefits users with slower internet connections or less capable 
+      devices by eliminating the need to download, parse, and execute JavaScript for these components.
+
+
+******************************************************************** IMP ******************************************************************************************************************************************************************** IMP ************************************************************************************************
+
+
+NextJS Video 50 - From 6:16 min :: 
+------------------------------------
+
+> We're at localhost:3000, click on the `dashboard` link and we see the log message in the browser's console. We've it twice because of React's strict mode. If we check the terminal, we can see there's no log message about the dashboard component rendering.
+  HOWEVER, if we reload the dashboard route we can see we've the message in the browser's console again, but if we head back to the terminal THIS TIME WE SEE THE SAME MESSAGE HERE AS WELL.
+
+  WHY THIS BEHAVIOUR ?
+  REMEMBER :==: Client components are primarily executed in the client and have access to the browser APIs, but they're also PRE-RENDERED ONCE ON THE SERVER to allow the user to immediately see Page's HTML content rather than a blank screen. It is an 
+                optimization strategy that NextJS implements and is recommended by React.
+

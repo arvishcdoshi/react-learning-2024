@@ -1,0 +1,40 @@
+Understand how React Rendering works --> https://www.telerik.com/blogs/understand-how-rendering-works-react
+Making sense of React Server Components --> https://www.joshwcomeau.com/react/server-components/
+
+
+SSR (Server Side Rendering)
+---------------------------------
+
+Server-side rendering is when React renders components to a string of HTML using 
+ReactDom's renderToString() method, and sends that HTML string to the client, 
+the same as any server sending static HTML.
+
+Then, usually with SSR setups, React re-runs on the client side, running over the 
+same rendered HTML, and does things like wire up click handlers and add interactivity. 
+This requires that the server and the client have the same data to render.
+
+This is done by serializing the data on the server into a <script> tag on the client with 
+the object representing the React state, and React "hydrates" on the client with that same state. 
+If the client has different data, it will produce a different DOM tree, and overwrite what the server 
+created, which defeats the purpose of SSR.
+
+With React on both the server and client, the initial page load can be SSR, and then subsequent page 
+loads can be client side. SSR is much faster than client side rendering for initial page loads, and then 
+client side is faster once all the Javascript resources are downloaded. This strategy is what Next.js does 
+by default when you use SSR.
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+
+Server Components
+-------------------
+
+Server components don't render to an HTML string.
+
+A React "component" is a function or a class that returns React "elements." 
+A React "element" is the object representation of the tree to render. In normal operation mode, 
+ReactDOM takes these element objects and renders them to the DOM.
+
+Server components return react elements to the client side. On the server, the components run, 
+and generate elements, which are passed to the client (basically as JSON). These elements are then rendered 
+on the client and put into the DOM.
